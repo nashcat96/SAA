@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <group android:checkableBehavior="single">
+        <item
+            android:id="@+id/calcioBoard"
+            android:icon="@drawable/ic_grain_24dp"
+            android:title="Calcio Board" />
+        <item
+            android:id="@+id/freeBoard"
+            android:icon="@drawable/ic_grain_24dp"
+            android:title="Free Board" />
+        <item
+            android:id="@+id/multiBoard"
+            android:icon="@drawable/ic_grain_24dp"
+            android:title="Multimedia" />
+        <item
+            android:id="@+id/qnaBoard"
+            android:icon="@drawable/ic_grain_24dp"
+            android:title="Q&amp;A Board" />
+        <item
+            android:id="@+id/castBoard"
+            android:icon="@drawable/ic_grain_24dp"
+            android:title="Broadcat Board" />
+
+    </group>
+    <!--
+        <item android:title="Communicate">
+            <menu>
+                <item
+                    android:id="@+id/nav_share"
+                    android:icon="@drawable/ic_menu_share"
+                    android:title="Share" />
+                <item
+                    android:id="@+id/nav_send"
+                    android:icon="@drawable/ic_menu_send"
+                    android:title="Send" />
+            </menu>
+        </item>
+    -->
+</menu>
