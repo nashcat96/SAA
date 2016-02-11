@@ -7,7 +7,8 @@
     android:gravity="center|top"
     app:layout_behavior="@string/appbar_scrolling_view_behavior"
     style="@style/AppTheme.NoActionBar"
-    tools:context="com.nashcat.serieamaniav2.WriteActivity">
+    tools:context="com.nashcat.serieamaniav2.WriteActivity"
+    android:background="#F5F5F5">
 
     <LinearLayout
         android:layout_width="match_parent"
@@ -15,10 +16,39 @@
         android:layout_alignParentTop="true"
         android:layout_above="@+id/writeToolbar"
         android:layout_alignParentLeft="true"
-        >
-        <EditText
+        android:orientation="vertical"
+        android:layout_margin="6dp">
+        <LinearLayout
             android:layout_width="match_parent"
-            android:layout_height="wrap_content" />
+            android:layout_height="wrap_content"
+            android:orientation="horizontal">
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="제목 "
+                android:id="@+id/title_text"
+                android:layout_above="@+id/write_body"
+                />
+
+            <EditText
+                android:id="@+id/write_title"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:background="@drawable/edittext_border"
+                android:layout_above="@+id/write_body"
+                />
+        </LinearLayout>
+
+
+        <EditText
+            android:id="@+id/write_body"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:inputType="textImeMultiLine"
+            android:background="@drawable/edittext_border"
+
+            android:layout_marginTop="12dp" />
+
     </LinearLayout>
 
 
@@ -76,8 +106,8 @@
                 <ImageButton
                     android:layout_width="30dp"
                     android:layout_height="30dp"
-                    android:id="@+id/write_btn_edit"
-                    android:src="@drawable/ic_forum_24dp"
+                    android:id="@+id/write_btn_youtube"
+                    android:src="@drawable/ic_theaters_24dp"
                     android:scaleType="fitXY"
                     android:background="@null" />
             </LinearLayout>
@@ -90,8 +120,8 @@
                 <ImageButton
                     android:layout_width="30dp"
                     android:layout_height="30dp"
-                    android:id="@+id/write_btn_delete"
-                    android:src="@drawable/ic_expand_less_24dp"
+                    android:id="@+id/write_btn_write"
+                    android:src="@drawable/ic_save_24dp"
                     android:scaleType="fitXY"
                     android:background="@null" />
             </LinearLayout>
