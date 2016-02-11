@@ -11,6 +11,7 @@ import android.webkit.WebView;
 import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import com.nashcat.serieamaniav2.vo.BoardContentsVO;
@@ -40,26 +41,29 @@ public class SingleItemView extends Activity {
         // Get the view from singleitemview.xml
         setContentView(R.layout.singleitemview);
         final EditText editTxtReply = (EditText)findViewById(R.id.textEditReply);
-        final ImageButton imgBtnTool = (ImageButton)findViewById(R.id.btn_tool);
-        final ImageButton imgBtnReply = (ImageButton)findViewById(R.id.btn_reply);
-        final ImageButton imgBtnCamera = (ImageButton)findViewById(R.id.btn_camera);
-        final ImageButton imgBtnPaste = (ImageButton)findViewById(R.id.btn_paste);
+        final LinearLayout replyLinear = (LinearLayout)findViewById(R.id.reply_linear);
+        final ImageButton imgBtnReplyCamera = (ImageButton)findViewById(R.id.btn_reply_camera);
+        final ImageButton imgBtnRepltDone = (ImageButton)findViewById(R.id.btn_reply_done);
+        final ImageButton imgBtnTool = (ImageButton)findViewById(R.id.singleview_btn_tool);
+        final ImageButton imgBtnEdit = (ImageButton)findViewById(R.id.singleview_btn_edit);
+        final ImageButton imgBtnReply = (ImageButton)findViewById(R.id.singleview_btn_reply);
+        final ImageButton imgBtnDelete = (ImageButton)findViewById(R.id.singleview_btn_delete);
         //툴버튼을 누르면 리플을 달수있는 에디트텍스트와 버튼이 보이게, 보여져 있는 상태면 감추기
         imgBtnTool.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-               if (imgBtnReply.getVisibility()== View.VISIBLE){
-                   editTxtReply.setVisibility(View.GONE);
+               if (replyLinear.getVisibility()== View.VISIBLE){
+                   replyLinear.setVisibility(View.GONE);
+                   imgBtnEdit.setVisibility(View.GONE);
                    imgBtnReply.setVisibility(View.GONE);
-                   imgBtnCamera.setVisibility(View.GONE);
-                   imgBtnPaste.setVisibility(View.GONE);
+                   imgBtnDelete.setVisibility(View.GONE);
                    imgBtnTool.setImageResource(R.drawable.ic_expand_less_24dp);
 
-                } else {
-                   editTxtReply.setVisibility(View.VISIBLE);
+               } else {
+                   replyLinear.setVisibility(View.VISIBLE);
+                   imgBtnEdit.setVisibility(View.VISIBLE);
                    imgBtnReply.setVisibility(View.VISIBLE);
-                   imgBtnCamera.setVisibility(View.VISIBLE);
-                   imgBtnPaste.setVisibility(View.VISIBLE);
+                   imgBtnDelete.setVisibility(View.VISIBLE);
                    imgBtnTool.setImageResource(R.drawable.ic_expand_more_24dp);
                }
 

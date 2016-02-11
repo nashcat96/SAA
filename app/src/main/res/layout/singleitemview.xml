@@ -11,7 +11,7 @@
         android:layout_alignParentTop="true"
         android:layout_above="@+id/SIVLinearLayout2"
         android:layout_alignParentLeft="true"
-        >
+        android:id="@+id/scrollView">
 
         <RelativeLayout
             android:layout_width="match_parent"
@@ -134,26 +134,72 @@
         android:layout_alignParentBottom="true"
         android:layout_alignParentLeft="true"
         android:gravity="center"
-        android:orientation="vertical"
-        >
-        <EditText
-            android:id="@+id/textEditReply"
-            android:layout_width="match_parent"
+        android:orientation="vertical">
+        <LinearLayout
             android:layout_height="wrap_content"
-            android:inputType="textMultiLine"
-            android:lines="5"
-            android:gravity="top"
-            android:background="#FFF0F0F0"
-            android:textCursorDrawable="@drawable/color_cursor"
+            android:layout_width="match_parent"
+            android:orientation="horizontal"
+            android:gravity="center"
+            android:paddingLeft="5dp"
+            android:paddingRight="5dp"
+            android:paddingTop="3dp"
+            android:paddingBottom="3dp"
             android:visibility="gone"
+            android:id="@+id/reply_linear">
+            <RelativeLayout
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:id="@+id/reply_area"
+                >
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="1dp"
+                    android:id="@+id/blank01"
+                    android:orientation="horizontal"
+                    ></LinearLayout>
+                <EditText
+                    android:id="@+id/textEditReply"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:inputType="textMultiLine"
+                    android:lines="5"
+                    android:gravity="top"
+                    android:background="@drawable/reply_edit_border"
+                    android:textCursorDrawable="@drawable/color_cursor"
+                    android:layout_below="@id/blank01"
+                    android:layout_alignParentLeft="true"
+                    android:layout_toLeftOf="@+id/btn_reply_done"
+                    />
+                <!-- 리플달기 버튼 -->
+                <ImageButton
+                    android:layout_width="32dp"
+                    android:layout_height="32dp"
+                    android:id="@+id/btn_reply_done"
+                    android:layout_alignParentRight="true"
+                    android:src="@drawable/ic_add_circle_outline_24dp"
+                    />
+                <!-- 리플에 이미지 첨부 버튼 -->
+                <ImageButton
+                    android:layout_width="32dp"
+                    android:layout_height="32dp"
+                    android:id="@+id/btn_reply_camera"
+                    android:layout_below="@id/btn_reply_done"
+                    android:layout_alignParentRight="true"
+                    android:src="@drawable/ic_camera_alt_24dp"
+                    android:layout_marginTop="5dp" />
+            </RelativeLayout>
 
-            android:layout_margin="2dp" />
+
+
+        </LinearLayout>
+
         <LinearLayout
             android:layout_height="wrap_content"
             android:layout_width="match_parent"
             android:orientation="horizontal"
             android:gravity="center"
             >
+            <!-- 글삭제 버튼-->
             <LinearLayout
                 android:layout_height="match_parent"
                 android:layout_width="0px"
@@ -163,12 +209,14 @@
                 <ImageButton
                     android:layout_width="30dp"
                     android:layout_height="30dp"
-                    android:id="@+id/btn_paste"
-                    android:src="@drawable/ic_content_paste_24dp"
+                    android:id="@+id/singleview_btn_delete"
+                    android:src="@drawable/ic_remove_circle_24dp"
                     android:scaleType="fitXY"
                     android:visibility="gone"
                     android:background="@null" />
             </LinearLayout>
+
+            <!-- 리플달기 버튼-->
             <LinearLayout
                 android:layout_height="match_parent"
                 android:layout_width="0px"
@@ -178,27 +226,13 @@
                 <ImageButton
                     android:layout_width="30dp"
                     android:layout_height="30dp"
-                    android:id="@+id/btn_camera"
-                    android:src="@drawable/ic_camera_alt_24dp"
-                    android:scaleType="fitXY"
-                    android:visibility="gone"
-                    android:background="@null" />
-            </LinearLayout>
-            <LinearLayout
-                android:layout_height="match_parent"
-                android:layout_width="0px"
-                android:layout_weight="1"
-                android:gravity="center"
-                >
-                <ImageButton
-                    android:layout_width="30dp"
-                    android:layout_height="30dp"
-                    android:id="@+id/btn_reply"
+                    android:id="@+id/singleview_btn_reply"
                     android:src="@drawable/ic_forum_24dp"
                     android:scaleType="fitXY"
                     android:visibility="gone"
                     android:background="@null" />
             </LinearLayout>
+            <!-- 내글 수정하기기 버튼-->
             <LinearLayout
                 android:layout_height="match_parent"
                 android:layout_width="0px"
@@ -208,7 +242,23 @@
                 <ImageButton
                     android:layout_width="30dp"
                     android:layout_height="30dp"
-                    android:id="@+id/btn_tool"
+                    android:id="@+id/singleview_btn_edit"
+                    android:src="@drawable/ic_edit_24dp"
+                    android:scaleType="fitXY"
+                    android:visibility="gone"
+                    android:background="@null" />
+            </LinearLayout>
+            <!-- 메뉴열고 닫기 버튼-->
+            <LinearLayout
+                android:layout_height="match_parent"
+                android:layout_width="0px"
+                android:layout_weight="1"
+                android:gravity="center"
+                >
+                <ImageButton
+                    android:layout_width="30dp"
+                    android:layout_height="30dp"
+                    android:id="@+id/singleview_btn_tool"
                     android:src="@drawable/ic_expand_less_24dp"
                     android:scaleType="fitXY"
                     android:background="@null" />
