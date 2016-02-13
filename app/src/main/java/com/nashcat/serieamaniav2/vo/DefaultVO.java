@@ -15,6 +15,15 @@ public class DefaultVO implements Serializable, Cloneable {
     private Map<String, String> loginCookies;
     private String loginYn;
     private String userNick;
+    private String mid;
+
+    public String getMid() {
+        return mid;
+    }
+
+    public void setMid(String mid) {
+        this.mid = mid;
+    }
 
     public String getUserNick() {
         return userNick;

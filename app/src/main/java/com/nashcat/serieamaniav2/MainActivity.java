@@ -53,8 +53,9 @@ public class MainActivity extends AppCompatActivity
     public int cPage ,cType,lCount,nCount;
     Map<String,String> loginCookies;
     DefaultVO userVo = new DefaultVO();
-
-
+    static final int LOGIN_REQUEST_CODE = 100;
+    static final int WRITE_REQUEST_CODE = 200;
+    String midString = "";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -81,8 +82,32 @@ public class MainActivity extends AppCompatActivity
                 fab.setVisibility(View.VISIBLE);
             }
         });
+        //글쓰기 버튼 클릭하면
+        final ImageButton writeButton = (ImageButton)findViewById(R.id.btnNew);
+        writeButton.setOnClickListener(new View.OnClickListener(){
+            @Override
+            public void onClick(View view) {
+                if ("".equals(midString) || midString.isEmpty()){
+                    //빈페이지에서는 버튼 안눌림
+                } else {
+                    if (userVo.getLoginCookies().isEmpty() || "N".equals(userVo.getLoginYn())){
+                        //java.lang.RuntimeException: Can't create handler inside thread that has not called Looper.prepare() 방지
+                        Handler mHandler = new Handler(Looper.getMainLooper());
+                        mHandler.postDelayed(new Runnable() {
+                            @Override
+                            public void run() {
+                                Toast.makeText(getApplicationContext(), "로그인 쿠키가 없습니다. 다시로그인해 주세요", Toast.LENGTH_SHORT).show();
+                            }
+                        }, 0);
+                        loginAct();
+                    }else{
+                        userVo.setMid(midString);
+                        writeAct(userVo);
+                    }
+                }
 
-        TextView nickTxt = (TextView) findViewById(R.id.profileId);
+            }
+        });
         // 로그인 액티비티 실행
         loginAct();
 
@@ -96,17 +121,36 @@ public class MainActivity extends AppCompatActivity
         NavigationView navigationView = (NavigationView) findViewById(R.id.nav_view);
         navigationView.setNavigationItemSelectedListener(this);
     }
+
+    protected void writeBtnOn(){
+        ImageButton writeBtn = (ImageButton)findViewById(R.id.btnNew);
+        writeBtn.setImageResource(R.drawable.ic_edit_24dp);
+    }
+    protected void writeBtnOff(){
+
+    }
+    protected void writeAct(DefaultVO nowVo){
+        Intent writeIntent = new Intent(this,WriteActivity.class);
+        writeIntent.putExtra("userVo",nowVo);
+        startActivityForResult(writeIntent, WRITE_REQUEST_CODE);
+    }
+
     protected void loginAct(){
         Intent loginIntent = new Intent(this,LoginActivity.class);
-        startActivityForResult(loginIntent, 100);
+        startActivityForResult(loginIntent, LOGIN_REQUEST_CODE);
     }
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
-        userVo = (DefaultVO)data.getSerializableExtra("userVo");
-        NavigationView navigationView = (NavigationView) findViewById(R.id.nav_view);
-        View header = navigationView.getHeaderView(0);
-        TextView text = (TextView)header.findViewById(R.id.profileId);
-        text.setText(userVo.getUserNick());
+        if (requestCode == LOGIN_REQUEST_CODE) {
+            if (resultCode == RESULT_OK){
+                userVo = (DefaultVO)data.getSerializableExtra("userVo");
+                NavigationView navigationView = (NavigationView) findViewById(R.id.nav_view);
+                View header = navigationView.getHeaderView(0);
+                TextView text = (TextView)header.findViewById(R.id.profileId);
+                text.setText(userVo.getUserNick());
+            }
+        }
+
         super.onActivityResult(requestCode, resultCode, data);
     }
 
@@ -168,7 +212,9 @@ public class MainActivity extends AppCompatActivity
             cType=1;
             lCount=0;
             nCount=0;
+            midString="calcioboard";
             url = "http://www.serieamania.com/xe/?mid=calcioboard&m=0&page="+cPage;
+            writeBtnOn();
             new JsoupListView().execute();
 
         } else if (id == R.id.freeBoard) {
@@ -178,7 +224,9 @@ public class MainActivity extends AppCompatActivity
             cType=2;
             lCount=0;
             nCount=0;
+            midString="freeboard2";
             url = "http://www.serieamania.com/xe/?mid=freeboard2&m=0&page="+cPage;
+            writeBtnOn();
             new JsoupListView().execute();
 
         } else if (id == R.id.multiBoard) {
@@ -188,7 +236,9 @@ public class MainActivity extends AppCompatActivity
             cType=3;
             lCount=0;
             nCount=0;
+            midString="multimedia1";
             url = "http://www.serieamania.com/xe/?mid=multimedia1&m=0&page="+cPage;
+            writeBtnOn();
             new JsoupListView().execute();
 
         } else if (id == R.id.qnaBoard) {
@@ -198,7 +248,9 @@ public class MainActivity extends AppCompatActivity
             cType=4;
             lCount=0;
             nCount=0;
+            midString="qna1";
             url = "http://www.serieamania.com/xe/?mid=qna1&m=0&page="+cPage;
+            writeBtnOn();
             new JsoupListView().execute();
 
         } else if (id == R.id.castBoard) {
@@ -208,7 +260,9 @@ public class MainActivity extends AppCompatActivity
             cType=5;
             lCount=0;
             nCount=0;
+            midString="broadcast1";
             url = "http://www.serieamania.com/xe/?mid=broadcast1&m=0&page="+cPage;
+            writeBtnOn();
             new JsoupListView().execute();
         }
 

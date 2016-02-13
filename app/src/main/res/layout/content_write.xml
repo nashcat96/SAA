@@ -44,10 +44,12 @@
             android:id="@+id/write_body"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:inputType="textImeMultiLine"
+            android:inputType="textMultiLine"
             android:background="@drawable/edittext_border"
-
-            android:layout_marginTop="12dp" />
+            android:singleLine="false"
+            android:layout_marginTop="12dp"
+            android:gravity="top"
+            android:padding="1dp" />
 
     </LinearLayout>
 
@@ -79,7 +81,7 @@
                     android:layout_width="30dp"
                     android:layout_height="30dp"
                     android:id="@+id/write_btn_paste"
-                    android:src="@drawable/ic_content_paste_24dp"
+                    android:src="@drawable/ic_content_paste_24dp_gray"
                     android:scaleType="fitXY"
                     android:background="@null" />
             </LinearLayout>
@@ -93,7 +95,7 @@
                     android:layout_width="30dp"
                     android:layout_height="30dp"
                     android:id="@+id/write_btn_camera"
-                    android:src="@drawable/ic_camera_alt_24dp"
+                    android:src="@drawable/ic_camera_alt_24dp_gray"
                     android:scaleType="fitXY"
                     android:background="@null" />
             </LinearLayout>
@@ -109,7 +111,8 @@
                     android:id="@+id/write_btn_youtube"
                     android:src="@drawable/ic_theaters_24dp"
                     android:scaleType="fitXY"
-                    android:background="@null" />
+                    android:background="@null"
+                    android:visibility="invisible"/>
             </LinearLayout>
             <LinearLayout
                 android:layout_height="match_parent"
