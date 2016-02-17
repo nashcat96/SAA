@@ -5,6 +5,7 @@ import android.os.Bundle;
 import android.support.design.widget.Snackbar;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
+import android.util.Log;
 import android.view.View;
 import android.widget.EditText;
 import android.widget.ImageButton;
@@ -13,12 +14,12 @@ import android.widget.TextView;
 import com.nashcat.serieamaniav2.vo.DefaultVO;
 
 import java.io.BufferedReader;
-import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.OutputStream;
 import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
 import java.net.URL;
+import java.util.Map;
 
 public class WriteActivity extends AppCompatActivity {
     DefaultVO userVo = new DefaultVO() ;
@@ -33,6 +34,9 @@ public class WriteActivity extends AppCompatActivity {
         TextView WriteTitle = (TextView)findViewById(R.id.write_boardTitle);
         userVo = (DefaultVO)intent.getSerializableExtra("userVo");
         String midString = userVo.getMid();
+        Map<String,String> kk = userVo.getLoginCookies();
+
+
         if ("calcioboard".equals(midString)){
             WriteTitle.setText("cacio게시판 글쓰기");
         } else if ("freeboard2".equals(midString)) {
@@ -58,37 +62,38 @@ public class WriteActivity extends AppCompatActivity {
                             .setAction("돌아가기", null).show();
                 } else {
 
-                    httpPost();
+                    httpPost(userVo);
                 }
             }
         });
     }
 
-    public void httpPost() {
+    public void httpPost(DefaultVO userVo) {
+        String phpsessid = userVo.getLoginCookies().get("PHPSESSID");
+        String mid = userVo.getMid();
+
         try{
             StringBuffer buffer = new StringBuffer();
-
+            String sUrl = "http://www.serieamania.com/xe/index.php?mid=" + mid + "&m=0&act=dispBoardWrite";
+            String sUrl2 = "http://www.serieamania.com/xe/?mid=" + mid + "&m=0&act=dispBoardWrite";
             buffer.append("<?xml version=\"1.0\" encoding=\"utf-8\" ?>");
             buffer.append("<methodCall>");
             buffer.append("<params>");
             buffer.append("<_filter><![CDATA[insert]]></_filter>");
-            buffer.append("<error_return_url><![CDATA[").append("/xe/index.php?mid=test&act=dispBoardWrite").append("]]></error_return_url>");
-            buffer.append("<act><![CDATA[procBoardInsertDocument]]></act>");
-            buffer.append("<mid><![CDATA[").append("test").append("]]></mid>");
-            buffer.append("<content><![CDATA[").append(content).append("<p><img src=\"http://nashcat.i234.me/saa05.png\"><p>html테스트").append("]]></content>");
-            buffer.append("<document_srl><![CDATA[").append("0").append("]]></document_srl>");
-            buffer.append("<title><![CDATA[").append(title).append("]]></title>");
-            buffer.append("<comment_status><![CDATA[ALLOW]]></comment_status>");
-            buffer.append("<nick_name><![CDATA[글쓴이]]></nick_name>");
-            buffer.append("<password><![CDATA[1234]]></password>");
+            buffer.append("<mid><![CDATA[").append(mid).append("]]></mid>");
+            buffer.append("<content><![CDATA[").append("세랴 앱에서 글쓰기 테스트 입니다<p> 곧 삭제할 글입니다.<p>쓸데없는글 죄송합니다ㅋ").append("]]></content>");
+            buffer.append("<allow_comment><![CDATA[Y]]></allow_comment>");
+            buffer.append("<title><![CDATA[").append("테스트글 곧 삭제하겠습니다.").append("]]></title>");
             buffer.append("<module><![CDATA[board]]></module>");
+            buffer.append("<act><![CDATA[procBoardInsertDocument]]></act>");
             buffer.append("</params>");
             buffer.append("</methodCall>");
 
-            URL url= new URL("http://nashcat96.cafe24.com/xe/index.php?mid=test&act=dispBoardWrite");
+            URL url= new URL(sUrl);
             HttpURLConnection http = (HttpURLConnection) url.openConnection();
             // 설정
             http.setDefaultUseCaches(false);
+            http.setUseCaches(true);
             http.setDoInput(true);
             http.setDoOutput(true);
             http.setRequestMethod("POST");
@@ -98,17 +103,14 @@ public class WriteActivity extends AppCompatActivity {
             http.setRequestProperty("Connection", "keep-alive");
             http.setRequestProperty("Content-Length", "" + Integer.toString(buffer.toString().getBytes().length));
             http.setRequestProperty("Content-Type", "text/plain");
-            //http.setRequestProperty("Cookie", "mobile=false; user-agent=7bbf6b91fb6a8a8334413fe6497a718d; PHPSESSID=9ed7jqhi2um1jg9tucmnjrg2e0");
-            http.setRequestProperty("Host", "nashcat96.cafe24.com");
-            http.setRequestProperty("Origin", "http://nashcat96.cafe24.com");
-            http.setRequestProperty("Referer", "http://nashcat96.cafe24.com/xe/index.php?mid=test&act=dispBoardWrite");
+            http.setRequestProperty("Cookie", "PHPSESSID="+phpsessid);
+            http.setRequestProperty("Host", "www.serieamania.com");
+            http.setRequestProperty("Origin", "http://www.serieamania.com");
+            http.setRequestProperty("Referer", sUrl2);
             http.setRequestProperty("User-Agent", "Mozilla/5.0 (Windows NT 10.0; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/48.0.2564.109 Safari/537.36");
-
-            //http.setRequestProperty("content-type", "application/x-www-form-urlencoded");
-
+            http.setRequestProperty("content-type", "application/x-www-form-urlencoded");
             http.setRequestProperty("Accept-Charset", "UTF-8");
-
-            http.setRequestProperty("X-Requested-With", "XMLHttpRequest");
+           // http.setRequestProperty("X-Requested-With", "XMLHttpRequest");
 
 
 
@@ -117,7 +119,7 @@ public class WriteActivity extends AppCompatActivity {
             outStream.write(buffer.toString().getBytes());
             outStream.flush();
 
-            InputStreamReader tmp = new InputStreamReader(http.getInputStream(), "UTF-8");
+            InputStreamReader tmp = new InputStreamReader(http.getInputStream());
             BufferedReader reader = new BufferedReader(tmp);
             StringBuilder builder = new StringBuilder();
             String str;
@@ -125,13 +127,14 @@ public class WriteActivity extends AppCompatActivity {
                 builder.append(str + "\n");                     // View에 표시하기 위해 라인 구분자 추가
             }
             myResult = builder.toString();                       // 전송결과를 전역 변수에 저장
-
+            Log.d("result",myResult);
         } catch (MalformedURLException e){
             //
-        } catch (IOException e){
-
+        } catch (Exception e){
+            String kk = e.toString();
+            Log.e("result",kk);
         }
-
+        finish();
 
     }
 
