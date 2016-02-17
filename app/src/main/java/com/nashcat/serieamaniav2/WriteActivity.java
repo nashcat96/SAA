@@ -56,7 +56,7 @@ public class WriteActivity extends AppCompatActivity {
 
                 title=((EditText)(findViewById(R.id.write_title))).getText().toString();
                 content=((EditText)(findViewById(R.id.write_body))).getText().toString();
-
+                content=content.replaceAll("(\r\n|\n\r|\r|\n)","<br>");
                 if ("".equals(title) || title.isEmpty() || "".equals(content) || content.isEmpty()) {
                     Snackbar.make(view, "제목과 내용을 모두 적어주십시오", Snackbar.LENGTH_LONG)
                             .setAction("돌아가기", null).show();
@@ -81,9 +81,9 @@ public class WriteActivity extends AppCompatActivity {
             buffer.append("<params>");
             buffer.append("<_filter><![CDATA[insert]]></_filter>");
             buffer.append("<mid><![CDATA[").append(mid).append("]]></mid>");
-            buffer.append("<content><![CDATA[").append("세랴 앱에서 글쓰기 테스트 입니다<p> 곧 삭제할 글입니다.<p>쓸데없는글 죄송합니다ㅋ").append("]]></content>");
+            buffer.append("<content><![CDATA[").append(content).append("]]></content>");
             buffer.append("<allow_comment><![CDATA[Y]]></allow_comment>");
-            buffer.append("<title><![CDATA[").append("테스트글 곧 삭제하겠습니다.").append("]]></title>");
+            buffer.append("<title><![CDATA[").append(title).append("]]></title>");
             buffer.append("<module><![CDATA[board]]></module>");
             buffer.append("<act><![CDATA[procBoardInsertDocument]]></act>");
             buffer.append("</params>");
@@ -93,7 +93,7 @@ public class WriteActivity extends AppCompatActivity {
             HttpURLConnection http = (HttpURLConnection) url.openConnection();
             // 설정
             http.setDefaultUseCaches(false);
-            http.setUseCaches(true);
+            http.setUseCaches(false);
             http.setDoInput(true);
             http.setDoOutput(true);
             http.setRequestMethod("POST");
@@ -102,15 +102,16 @@ public class WriteActivity extends AppCompatActivity {
             http.setRequestProperty("Accept-Language", "ko-KR,ko;q=0.8,en-US;q=0.6,en;q=0.4");
             http.setRequestProperty("Connection", "keep-alive");
             http.setRequestProperty("Content-Length", "" + Integer.toString(buffer.toString().getBytes().length));
-            http.setRequestProperty("Content-Type", "text/plain");
+            //http.setRequestProperty("Content-Type", "text/plain");
             http.setRequestProperty("Cookie", "PHPSESSID="+phpsessid);
             http.setRequestProperty("Host", "www.serieamania.com");
             http.setRequestProperty("Origin", "http://www.serieamania.com");
             http.setRequestProperty("Referer", sUrl2);
             http.setRequestProperty("User-Agent", "Mozilla/5.0 (Windows NT 10.0; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/48.0.2564.109 Safari/537.36");
-            http.setRequestProperty("content-type", "application/x-www-form-urlencoded");
+            http.setRequestProperty("content-type", "application/xml");
+            //http.setRequestProperty("content-type", "application/x-www-form-urlencoded");
             http.setRequestProperty("Accept-Charset", "UTF-8");
-           // http.setRequestProperty("X-Requested-With", "XMLHttpRequest");
+            http.setRequestProperty("X-Requested-With", "XMLHttpRequest");
 
 
 
