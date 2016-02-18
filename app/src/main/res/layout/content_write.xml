@@ -36,7 +36,7 @@
                 android:layout_height="wrap_content"
                 android:background="@drawable/edittext_border"
                 android:layout_above="@+id/write_body"
-                />
+                android:minLines="2" />
         </LinearLayout>
 
 
@@ -80,6 +80,21 @@
                 <ImageButton
                     android:layout_width="30dp"
                     android:layout_height="30dp"
+                    android:id="@+id/write_btn_exit"
+                    android:src="@drawable/ic_backspace_24dp"
+                    android:scaleType="fitXY"
+                    android:background="@null"
+                    />
+            </LinearLayout>
+            <LinearLayout
+                android:layout_height="match_parent"
+                android:layout_width="0px"
+                android:layout_weight="1"
+                android:gravity="center"
+                >
+                <ImageButton
+                    android:layout_width="30dp"
+                    android:layout_height="30dp"
                     android:id="@+id/write_btn_paste"
                     android:src="@drawable/ic_content_paste_24dp_gray"
                     android:scaleType="fitXY"
@@ -99,21 +114,7 @@
                     android:scaleType="fitXY"
                     android:background="@null" />
             </LinearLayout>
-            <LinearLayout
-                android:layout_height="match_parent"
-                android:layout_width="0px"
-                android:layout_weight="1"
-                android:gravity="center"
-                >
-                <ImageButton
-                    android:layout_width="30dp"
-                    android:layout_height="30dp"
-                    android:id="@+id/write_btn_youtube"
-                    android:src="@drawable/ic_theaters_24dp"
-                    android:scaleType="fitXY"
-                    android:background="@null"
-                    android:visibility="invisible"/>
-            </LinearLayout>
+
             <LinearLayout
                 android:layout_height="match_parent"
                 android:layout_width="0px"

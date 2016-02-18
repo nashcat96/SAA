@@ -1,5 +1,7 @@
 package com.nashcat.serieamaniav2;
 
+import android.app.AlertDialog;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.design.widget.Snackbar;
@@ -30,33 +32,33 @@ public class WriteActivity extends AppCompatActivity {
         setContentView(R.layout.activity_write);
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
-        Intent intent= getIntent();
-        TextView WriteTitle = (TextView)findViewById(R.id.write_boardTitle);
-        userVo = (DefaultVO)intent.getSerializableExtra("userVo");
+        Intent intent = getIntent();
+        TextView WriteTitle = (TextView) findViewById(R.id.write_boardTitle);
+        userVo = (DefaultVO) intent.getSerializableExtra("userVo");
         String midString = userVo.getMid();
-        Map<String,String> kk = userVo.getLoginCookies();
+        Map<String, String> kk = userVo.getLoginCookies();
 
 
-        if ("calcioboard".equals(midString)){
+        if ("calcioboard".equals(midString)) {
             WriteTitle.setText("cacio게시판 글쓰기");
         } else if ("freeboard2".equals(midString)) {
             WriteTitle.setText("자유게시판 글쓰기");
-        } else if ("multimedia1".equals(midString)){
+        } else if ("multimedia1".equals(midString)) {
             WriteTitle.setText("멀티미디어게시판 글쓰기");
-        } else if ("qna1".equals(midString)){
+        } else if ("qna1".equals(midString)) {
             WriteTitle.setText("질문게시판 글쓰기");
-        }else if("broadcast1".equals(midString)){
+        } else if ("broadcast1".equals(midString)) {
             WriteTitle.setText("중계게시판 글쓰기");
         }
         //전송버튼
-        ImageButton writeButton = (ImageButton)findViewById(R.id.write_btn_write);
-        writeButton.setOnClickListener(new View.OnClickListener(){
+        ImageButton writeButton = (ImageButton) findViewById(R.id.write_btn_write);
+        writeButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
 
-                title=((EditText)(findViewById(R.id.write_title))).getText().toString();
-                content=((EditText)(findViewById(R.id.write_body))).getText().toString();
-                content=content.replaceAll("(\r\n|\n\r|\r|\n)","<br>");
+                title = ((EditText) (findViewById(R.id.write_title))).getText().toString();
+                content = ((EditText) (findViewById(R.id.write_body))).getText().toString();
+                content = content.replaceAll("(\r\n|\n\r|\r|\n)", "<br>");
                 if ("".equals(title) || title.isEmpty() || "".equals(content) || content.isEmpty()) {
                     Snackbar.make(view, "제목과 내용을 모두 적어주십시오", Snackbar.LENGTH_LONG)
                             .setAction("돌아가기", null).show();
@@ -64,6 +66,33 @@ public class WriteActivity extends AppCompatActivity {
 
                     httpPost(userVo);
                 }
+            }
+        });
+
+        //뒤로가기대신 종료 버튼을 따로 두기
+        final AlertDialog.Builder builder = new AlertDialog.Builder(this);
+        builder.setTitle("글쓰기 취소")        // 제목 설정
+                .setMessage("글쓰기창을 닫으시겠습니까?\n 창을 닫으면 작성중인 내용이 모두 사라집니다.")        // 메세지 설정
+                .setCancelable(false)        // 뒤로 버튼 클릭시 취소 가능 설정
+                .setPositiveButton("예", new DialogInterface.OnClickListener() {
+                    // 확인 버튼 클릭시 설정
+                    public void onClick(DialogInterface dialog, int whichButton) {
+                        finish();
+                    }
+                })
+                .setNegativeButton("아니오", new DialogInterface.OnClickListener() {
+                    // 취소 버튼 클릭시 설정
+                    public void onClick(DialogInterface dialog, int whichButton) {
+                        dialog.cancel();
+                    }
+                });
+
+        ImageButton closeBtn = (ImageButton)findViewById(R.id.write_btn_exit);
+        closeBtn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                AlertDialog dialog = builder.create();    // 알림창 객체 생성
+                dialog.show();
             }
         });
     }
@@ -138,5 +167,8 @@ public class WriteActivity extends AppCompatActivity {
         finish();
 
     }
-
+    @Override
+    public void onBackPressed() {
+        //super.onBackPressed();
+    }
 }

@@ -4,6 +4,8 @@ import android.app.Activity;
 import android.content.Intent;
 import android.os.AsyncTask;
 import android.os.Bundle;
+import android.os.Handler;
+import android.os.Looper;
 import android.view.KeyEvent;
 import android.view.View;
 import android.webkit.WebSettings;
@@ -12,26 +14,39 @@ import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
+import android.widget.ListView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.nashcat.serieamaniav2.vo.BoardContentsVO;
+import com.nashcat.serieamaniav2.vo.DefaultVO;
+import com.nashcat.serieamaniav2.vo.ReplyContentsVO;
 
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
+import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
 
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Map;
 
 /**
  * Created by nash on 2015-07-17.
  */
 public class SingleItemView extends Activity {
+    static final int LOGIN_REQUEST_CODE = 100;
 
+    ListView replyListview;
+    ReplyListViewAdapter replyAdapter;
     String longTitle,longCon,longCon2,longCon3, longDate ;
-
+    ArrayList<ReplyContentsVO> replyList;
     ImageLoader imageLoader = new ImageLoader(this);
     ImageView bannerimg;
     BoardContentsVO boardContentsVO = null;
+    DefaultVO userVo = new DefaultVO();
+
 //    ListView listview2;
     //ListViewReplyAdapter adapter2;
 
@@ -73,6 +88,9 @@ public class SingleItemView extends Activity {
 
         Intent i = getIntent();
         // Get the result of
+        Map<String, String> cook = new HashMap<>();
+        cook.put("PHPSESSID",i.getStringExtra("phpsessid"));
+        userVo.setLoginCookies(cook);
         boardContentsVO.setName(i.getStringExtra("number"));
         // Get the result of subject
         boardContentsVO.setSubject(i.getStringExtra("subject"));
@@ -133,7 +151,10 @@ public class SingleItemView extends Activity {
         }
         return super.onKeyDown(keyCode, event);
     }
-
+    protected void loginAct(){
+        Intent loginIntent = new Intent(this,LoginActivity.class);
+        startActivityForResult(loginIntent, LOGIN_REQUEST_CODE);
+    }
     private class JsoupView extends AsyncTask<Void, Void, Void> {
 
         @Override
@@ -143,8 +164,26 @@ public class SingleItemView extends Activity {
             int rPage;
 
             try {
+
+                //쿠키가 없으면 다시 로그인으로
+                if (userVo.getLoginCookies().isEmpty() || "N".equals(userVo.getLoginYn())){
+
+                    //java.lang.RuntimeException: Can't create handler inside thread that has not called Looper.prepare() 방지
+                    Handler mHandler = new Handler(Looper.getMainLooper());
+                    mHandler.postDelayed(new Runnable() {
+                        @Override
+                        public void run() {
+                            Toast.makeText(getApplicationContext(), "로그인 쿠키가 없습니다. 다시로그인해 주세요", Toast.LENGTH_SHORT).show();
+                        }
+                    }, 0);
+
+                    loginAct();
+                    return null;
+
+                }
+                Map<String, String> loginCookies = userVo.getLoginCookies();
                 // Connect to the Website URL
-                Document doc = Jsoup.connect(boardContentsVO.getContentUrl()).get();
+                Document doc = Jsoup.connect(boardContentsVO.getContentUrl()).cookies(loginCookies).get();
                 // Identify Table Class "worldpopulation"
                 // 게시판 에서 tbody 태그 안쪽을 파싱
                 Elements replyPage = doc.select("div[class=pagination]");
@@ -240,6 +279,13 @@ public class SingleItemView extends Activity {
             //txtcontents.setText(longCon);
 
 
+            replyListview = (ListView)findViewById(R.id.replyListview);
+
+            replyAdapter= new ReplyListViewAdapter(SingleItemView.this,replyList);
+
+
+            replyListview.setAdapter(replyAdapter);
+
 
         }
         //리플 파싱
@@ -248,7 +294,7 @@ public class SingleItemView extends Activity {
             int currentReplyPageNumber = 1;
             String replyUrl;
             StringBuffer replyContents = new StringBuffer();
-
+            if(replyList == null) replyList = new  ArrayList<ReplyContentsVO>();
             //리플페이지 갯수로 리플 파싱
             if (page==0){
                 //리플 페이지가 한페이지만 있으면
@@ -256,7 +302,8 @@ public class SingleItemView extends Activity {
                 replyUrl=url;
 
                 try {
-                    Document doc = Jsoup.connect(replyUrl).get();
+                    Map<String, String> loginCookies = userVo.getLoginCookies();
+                    Document doc = Jsoup.connect(replyUrl).cookies(loginCookies).get();
 
                     Elements box = doc.select("div[class=replyBox]");
 
@@ -282,6 +329,7 @@ public class SingleItemView extends Activity {
 
 
                     longCon3=kk2;
+
 
 
 
@@ -333,7 +381,45 @@ public class SingleItemView extends Activity {
                 }
                 longCon3 = replyContents.toString();
             }
+            Document replyDoc = Jsoup.parse(longCon3);
+            //리플 한개한개 분리
+            Elements replyItems = replyDoc.select("div[class^=item]");
 
+            for (org.jsoup.nodes.Element oneReplyHtml : replyItems) {
+                ReplyContentsVO replyContentsVO = new ReplyContentsVO();
+                String replyNum = oneReplyHtml.attr("id").replace("comment_", "");
+                //리플 번호
+                replyContentsVO.setReplyNumber(replyNum);
+
+                Element forGetData = oneReplyHtml.select("div[class=auther").first();
+                //아이콘 추출
+                Elements imgSrc = forGetData.select("img[src]");
+                replyContentsVO.setUserIcon(imgSrc.attr("src"));
+
+                //날짜 추출
+                Elements replyDt = forGetData.select("font[color=gray]");
+                replyContentsVO.setReplyDt(replyDt.text());
+                //유저 추출
+                Elements  replyUser = forGetData.select("Strong");
+                replyContentsVO.setReplyUser(replyUser.text());
+
+                //내용 추출
+                Element replyCon = oneReplyHtml.select("div[class$=xe_content").first();
+                replyContentsVO.setReplyContent(replyCon.html());
+
+                //자기가쓴글 여부
+                Element yN = forGetData.select("span[class=replyOption").first();
+                Elements writeYn = yN.select("a");
+                String wrYn= writeYn.get(0).text();
+                if (wrYn == "..." || "...".equals(wrYn)){
+                    replyContentsVO.setReplyMineYn("N");
+                }else{
+                    replyContentsVO.setReplyMineYn("Y");
+                }
+
+                replyList.add(replyContentsVO);
+
+            }
         }
 
     }

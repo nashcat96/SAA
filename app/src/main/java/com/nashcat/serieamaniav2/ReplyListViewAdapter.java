@@ -11,7 +11,7 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.nashcat.serieamaniav2.vo.BoardContentsVO;
-import com.nashcat.serieamaniav2.vo.DefaultVO;
+import com.nashcat.serieamaniav2.vo.ReplyContentsVO;
 
 import java.util.ArrayList;
 
@@ -19,25 +19,22 @@ import java.util.ArrayList;
 /**
  * Created by nash on 2015-07-17.
  */
-public class ListViewAdapter extends BaseAdapter {
+public class ReplyListViewAdapter extends BaseAdapter {
 
 
     // Declare Variables
     Context context;
     LayoutInflater inflater;
-    ArrayList<BoardContentsVO> contentsData;
+    ArrayList<ReplyContentsVO> contentsData;
     ImageLoader imageLoader;
     BoardContentsVO resultVO =null;
-    DefaultVO userVo = new DefaultVO();
 
-    public ListViewAdapter(Context context,
-                           ArrayList<BoardContentsVO> contentsList, DefaultVO defaultVO) {
+    public ReplyListViewAdapter(Context context,
+                                ArrayList<ReplyContentsVO> replyList) {
         this.context = context;
-        contentsData = contentsList;
+        contentsData = replyList;
 
         imageLoader = new ImageLoader(context);
-        userVo.setLoginCookies(defaultVO.getLoginCookies());
-
     }
 
     @Override
@@ -104,7 +101,6 @@ public class ListViewAdapter extends BaseAdapter {
             public void onClick(View arg0) {
                 // Get the position
                 resultVO = contentsData.get(position);
-                String phpsessid = userVo.getLoginCookies().get("PHPSESSID");
                 Intent intent = new Intent(context, SingleItemView.class);
                 // Pass all data number
                 intent.putExtra("number", resultVO.getNumber());
@@ -117,7 +113,6 @@ public class ListViewAdapter extends BaseAdapter {
                 // Pass all data userIcon
                 intent.putExtra("userIcon", resultVO.getUserIcon());
                 // Start SingleItemView Class
-                intent.putExtra("phpsessid", phpsessid);
                 context.startActivity(intent);
 
             }

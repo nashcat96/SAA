@@ -8,7 +8,6 @@ import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Looper;
-import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.NavigationView;
 import android.support.v4.view.GravityCompat;
 import android.support.v4.widget.DrawerLayout;
@@ -64,24 +63,8 @@ public class MainActivity extends AppCompatActivity
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
         final LinearLayout bottomBtn = (LinearLayout)findViewById(R.id.CTNLinear);
-        //플로팅 버튼 클릭하면 하단버튼 바 보이게
-        final FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
-        fab.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                bottomBtn.setVisibility(View.VISIBLE);
-                fab.setVisibility(View.GONE);
-            }
-        });
-        //하단 버튼바 중 닫기 버튼 누르면 하단버튼바를 숨기고 플로팅 버튼 보이게하기
-        final ImageButton bottomClose = (ImageButton)findViewById(R.id.btnClose);
-        bottomClose.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                bottomBtn.setVisibility(View.GONE);
-                fab.setVisibility(View.VISIBLE);
-            }
-        });
+
+
         //글쓰기 버튼 클릭하면
         final ImageButton writeButton = (ImageButton)findViewById(R.id.btnNew);
         writeButton.setOnClickListener(new View.OnClickListener(){
@@ -120,6 +103,23 @@ public class MainActivity extends AppCompatActivity
 
         NavigationView navigationView = (NavigationView) findViewById(R.id.nav_view);
         navigationView.setNavigationItemSelectedListener(this);
+
+
+        //하단 버튼바 중 닫기 버튼 누르면 하단버튼바를 숨기고 플로팅 버튼 보이게하기
+        final ImageButton bottomClose = (ImageButton)findViewById(R.id.btnClose);
+        bottomClose.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                if (writeButton.getVisibility()== View.VISIBLE){
+                    writeButton.setVisibility(View.GONE);
+                    bottomClose.setImageResource(R.drawable.ic_expand_less_24dp);
+                }else {
+                    writeButton.setVisibility(View.VISIBLE);
+                    bottomClose.setImageResource(R.drawable.ic_expand_more_24dp);
+                }
+
+            }
+        });
     }
 
     protected void writeBtnOn(){
@@ -392,7 +392,8 @@ public class MainActivity extends AppCompatActivity
             // Locate the listview in listview_main.xml
             listview = (ListView) findViewById(R.id.listview);
             // Pass the results into ListViewAdapter.java
-            adapter = new ListViewAdapter(MainActivity.this, contentsList);
+
+            adapter = new ListViewAdapter(MainActivity.this, contentsList, userVo);
             // Set the adapter to the ListView
             listview.setAdapter(adapter);
 
