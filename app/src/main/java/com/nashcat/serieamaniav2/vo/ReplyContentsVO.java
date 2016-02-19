@@ -22,6 +22,16 @@ public class ReplyContentsVO extends DefaultVO implements Serializable {
     private String replyContent;
     /** 아이콘 */
     private String userIcon;
+    /** 대댓글 여부 마진*/
+    private String rplyMargin;
+
+    public String getRplyMargin() {
+        return rplyMargin;
+    }
+
+    public void setRplyMargin(String rplyMargin) {
+        this.rplyMargin = rplyMargin;
+    }
 
     public String getReplyNumber() {
         return replyNumber;

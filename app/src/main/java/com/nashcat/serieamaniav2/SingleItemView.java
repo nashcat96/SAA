@@ -6,6 +6,7 @@ import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Looper;
+import android.util.Log;
 import android.view.KeyEvent;
 import android.view.View;
 import android.webkit.WebSettings;
@@ -156,7 +157,11 @@ public class SingleItemView extends Activity {
         startActivityForResult(loginIntent, LOGIN_REQUEST_CODE);
     }
     private class JsoupView extends AsyncTask<Void, Void, Void> {
+        @Override
+        protected void onPreExecute() {
+            super.onPreExecute();
 
+        }
         @Override
         protected Void doInBackground(Void... params) {
             // Create an array
@@ -248,29 +253,16 @@ public class SingleItemView extends Activity {
         @Override
         protected void onPostExecute(Void result) {
             // Locate the listview in listview_main.xml
-
             TextView txtsubject = (TextView) findViewById(R.id.ssubject);
             //TextView txtcontents = (TextView) findViewById(R.id.contentUrl);
             TextView txtreply = (TextView) findViewById(R.id.sreply);
-
             WebView wb = (WebView) findViewById(R.id.webView);
-            WebView wb2 = (WebView) findViewById(R.id.webView2);
-
-
 
             //이미지,아이프레임 리사이징과 자바스크립트 설정, 한글구현
             wb.getSettings().setLayoutAlgorithm(WebSettings.LayoutAlgorithm.SINGLE_COLUMN);
             wb.getSettings().setJavaScriptEnabled(true);
             wb.loadData("<style>img{width:100% !important;}</style><style>iframe{width:100% !important;}</style>"
                                         +longCon2, "text/html; charset=UTF-8", null);
-
-
-
-            wb2.getSettings().setLayoutAlgorithm(WebSettings.LayoutAlgorithm.SINGLE_COLUMN);
-            wb2.getSettings().setJavaScriptEnabled(true);
-            wb2.loadData(longCon3, "text/html; charset=UTF-8", null);
-
-
 
             int dateLength = longDate.length();
             String aDate = longDate.substring(dateLength-19,dateLength);
@@ -280,13 +272,8 @@ public class SingleItemView extends Activity {
 
 
             replyListview = (ListView)findViewById(R.id.replyListview);
-
             replyAdapter= new ReplyListViewAdapter(SingleItemView.this,replyList);
-
-
             replyListview.setAdapter(replyAdapter);
-
-
         }
         //리플 파싱
         protected void replyAppend(String url,int page) {
@@ -325,13 +312,7 @@ public class SingleItemView extends Activity {
                                     .replace("?version=3\" ", "\"></iframe><sde ")
                                     .replace("?version=3", "\"></iframe><sde ");
                     //
-
-
-
                     longCon3=kk2;
-
-
-
 
                 } catch (IOException e) {
                     // TODO Auto-generated catch block
@@ -390,6 +371,14 @@ public class SingleItemView extends Activity {
                 String replyNum = oneReplyHtml.attr("id").replace("comment_", "");
                 //리플 번호
                 replyContentsVO.setReplyNumber(replyNum);
+                //리플 마진
+                Element forReplyMargin = oneReplyHtml.select("div[class=indent").first();
+                String replyMargin = forReplyMargin.attr("style");
+                if (replyMargin.contains("margin-left")){
+                    replyContentsVO.setRplyMargin(replyMargin.replace("margin-left:","").replace("px",""));
+                } else{
+                    replyContentsVO.setRplyMargin("0");
+                }
 
                 Element forGetData = oneReplyHtml.select("div[class=auther").first();
                 //아이콘 추출
@@ -420,6 +409,8 @@ public class SingleItemView extends Activity {
                 replyList.add(replyContentsVO);
 
             }
+            //리플 add완료
+            Log.v("te","te");
         }
 
     }

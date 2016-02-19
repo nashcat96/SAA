@@ -10,54 +10,106 @@
 
 
 
-    <ImageView
-        android:id="@+id/reply_userIcon"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:contentDescription="@string/noimage"
-        android:layout_alignParentRight="false"
-        android:minHeight="15dp"
-        android:minWidth="15dp"
-        android:scaleType="fitXY"
-        android:layout_alignParentLeft="true"
-        android:layout_marginLeft="5dp"
-        android:maxHeight="15dp"
-        android:maxWidth="15dp"
-        android:background="#FFFFFF"
-        android:layout_marginRight="2dp" />
-    <TextView
-        android:id="@+id/txtView_reply_name"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:textSize="11dp"
-        android:minWidth="220dp"
-        android:layout_alignParentRight="false"
-        android:layout_toRightOf="@+id/reply_userIcon"
-        android:paddingBottom="2dp"
-        android:background="#FFFFFF" />
-
-    <TextView
-        android:id="@+id/txtView_reply_dt"
+    <RelativeLayout
+        android:id="@+id/relativeMain"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_below="@+id/txtView_reply_name"
-        android:textSize="11dp"
-        android:background="#FFFFFF"
-        android:layout_marginLeft="5dp"
-        android:layout_marginRight="10dp" />
+        android:layout_height="match_parent"
+        android:layout_toRightOf="@+id/relativeMargin"
+        android:background="#FFFFFF">
+        <ImageView
+            android:id="@+id/reply_userIcon"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:contentDescription="@string/noimage"
+            android:layout_alignParentRight="false"
+            android:minHeight="15dp"
+            android:minWidth="15dp"
+            android:scaleType="fitXY"
+            android:layout_alignParentLeft="true"
+            android:layout_marginLeft="5dp"
+            android:maxHeight="15dp"
+            android:maxWidth="15dp"
+            android:background="#FFFFFF"
+            android:layout_marginRight="2dp" />
+        <TextView
+            android:id="@+id/txtView_reply_name"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textSize="11dp"
+            android:minWidth="220dp"
+            android:layout_alignParentRight="false"
+            android:layout_toRightOf="@+id/reply_userIcon"
+            android:paddingBottom="2dp"
+            android:background="#FFFFFF" />
 
-    <WebView
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:id="@+id/replyWebView"
-        android:layout_below="@+id/txtView_reply_dt"
-        android:textSize="11dp"
-        android:background="#FFFFFF"
-        android:layout_marginLeft="5dp"
-        android:layout_marginRight="10dp"
-        />
+        <TextView
+            android:id="@+id/txtView_reply_dt"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:minWidth="220dp"
+            android:layout_below="@+id/txtView_reply_name"
+            android:textSize="11dp"
+            android:background="#FFFFFF"
+            android:layout_marginLeft="5dp"
+            android:layout_marginRight="10dp"
+            android:textColor="#666666" />
+        <TextView
+            android:id="@+id/txtView_reply_number"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_below="@+id/txtView_reply_name"
+            android:layout_toRightOf="@+id/txtView_reply_dt"
+            android:textSize="3dp"
+            android:background="#FFFFFF"
+            android:visibility="invisible"
+            android:layout_marginLeft="5dp"
+            android:layout_marginRight="10dp" />
+        <TextView
+            android:id="@+id/txtView_reply_mine_yn"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_below="@+id/txtView_reply_name"
+            android:layout_toRightOf="@+id/txtView_reply_number"
+            android:textSize="3dp"
+            android:background="#FFFFFF"
+            android:visibility="invisible"
+            android:layout_marginLeft="5dp"
+            android:layout_marginRight="10dp" />
+        <WebView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:id="@+id/replyWebView"
+            android:layout_below="@+id/txtView_reply_dt"
+            android:textSize="11dp"
+            android:background="#FFFFFF"
+            android:layout_marginLeft="5dp"
+            android:layout_marginRight="10dp"
+            />
+    </RelativeLayout>
+    <RelativeLayout
+        android:layout_width="wrap_content"
+        android:layout_height="match_parent"
 
+        android:id="@+id/relativeMargin"
+        android:background="#FFFFFF">
+        <ImageView
+            android:id="@+id/reply_marginIcon"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:contentDescription="@string/noimage"
 
+            android:layout_alignParentRight="false"
+            android:minHeight="15dp"
+            android:minWidth="15dp"
+            android:scaleType="fitXY"
+            android:layout_alignParentLeft="true"
+            android:layout_marginLeft="5dp"
+            android:maxHeight="15dp"
+            android:maxWidth="15dp"
+            android:background="#FFFFFF"
+            android:layout_marginRight="2dp" />
+
+    </RelativeLayout>
 </RelativeLayout>
 
 
