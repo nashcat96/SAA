@@ -31,7 +31,7 @@
                 android:adjustViewBounds="true"/>
 
             <TextView
-                android:id="@+id/ssubject"
+                android:id="@+id/singleSubject"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="@string/content_title"
@@ -45,7 +45,7 @@
                 android:minHeight="30dp" />
 
             <ImageView
-                android:id="@+id/suserIcon"
+                android:id="@+id/singleUserIcon"
                 android:contentDescription="@string/noimage"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
@@ -54,28 +54,28 @@
                 android:scaleType="fitXY"
                 android:padding="0dp"
                 android:paddingTop="10dp"
-                android:layout_below="@+id/ssubject"
+                android:layout_below="@+id/singleSubject"
                 android:layout_marginLeft="10dp" />
 
 
             <TextView
-                android:id="@+id/sname"
+                android:id="@+id/singleName"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_below="@+id/ssubject"
-                android:layout_toRightOf="@+id/suserIcon"
+                android:layout_below="@+id/singleSubject"
+                android:layout_toRightOf="@+id/singleUserIcon"
                 android:text="@string/content_name"
                 android:paddingLeft="10dp"
                 android:paddingRight="10dp"        />
 
             <TextView
-                android:id="@+id/sreply"
+                android:id="@+id/singleDate"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="@string/content_date"
                 android:paddingLeft="10dp"
                 android:paddingRight="10dp"
-                android:layout_alignBottom="@+id/suserIcon"
+                android:layout_alignBottom="@+id/singleUserIcon"
                 android:layout_alignParentRight="true"
                 android:layout_alignParentEnd="true" />
 
@@ -83,7 +83,7 @@
                 android:background="#888888"
                 android:layout_width = "wrap_content"
                 android:layout_height="1dip"
-                android:layout_below="@+id/suserIcon"
+                android:layout_below="@+id/singleUserIcon"
                 android:layout_marginTop="4dp"
                 android:layout_marginBottom="4dp"
                 android:layout_alignParentLeft="true"
@@ -99,7 +99,6 @@
                 android:background="#888888"
                 android:layout_width = "wrap_content"
                 android:layout_height="1dip"
-
                 android:layout_below="@+id/webView"
                 android:layout_marginTop="4dp"
                 android:layout_marginBottom="4dp"

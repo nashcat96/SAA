@@ -53,7 +53,7 @@ public class ReplyListViewAdapter extends BaseAdapter {
         return position;
     }
 
-    public View getView(final int position, View convertView, ViewGroup parent) {
+    public View getView(final int position, View replyItemView, ViewGroup parent) {
         // 대댓글 마진
         ImageView replyMargin;
         //리플에 달린 유저 아이콘
@@ -77,7 +77,10 @@ public class ReplyListViewAdapter extends BaseAdapter {
         inflater = (LayoutInflater) context
                 .getSystemService(Context.LAYOUT_INFLATER_SERVICE);
 
-        View replyItemView = inflater.inflate(R.layout.replylistview_item, null, false);
+        if (replyItemView == null) {
+            replyItemView = inflater.inflate(R.layout.replylistview_item, parent, false);
+        }
+
         // Get the position
 
         resultVO = contentsData.get(position);

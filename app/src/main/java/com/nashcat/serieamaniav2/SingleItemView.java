@@ -104,6 +104,17 @@ public class SingleItemView extends Activity {
         // Get the result of url
         boardContentsVO.setContentUrl(i.getStringExtra("contentUrl"));
         bannerimg=(ImageView) findViewById(R.id.imgtitle);
+
+        // Locate the TextViews in singleitemview.xml
+
+        TextView txtName = (TextView) findViewById(R.id.singleName);
+        ImageView imgUserIcon = (ImageView) findViewById(R.id.singleUserIcon);
+        txtName.setText(boardContentsVO.getName());
+        imageLoader.DisplayImage(boardContentsVO.getUserIcon(), imgUserIcon);
+
+
+
+
         switch (MainActivity.TYPEC) {
             case 1:
                 bannerimg.setImageResource(R.drawable.cal_hd);
@@ -124,17 +135,8 @@ public class SingleItemView extends Activity {
         }
         new JsoupView().execute();
 
-    // Locate the TextViews in singleitemview.xml
-        //TextView txtnumber = (TextView) findViewById(R.id.snumber);
-        TextView txtName = (TextView) findViewById(R.id.sname);
-        // Locate the ImageView in singleitemview.xml
-        ImageView imgUserIcon = (ImageView) findViewById(R.id.suserIcon);
-        // Set results to the TextViews
-        //txtnumber.setText(number);
-        txtName.setText(boardContentsVO.getName());
-        // Capture position and set results to the ImageView
-        // Passes userIcon images URL into ImageLoader.class
-        imageLoader.DisplayImage(boardContentsVO.getUserIcon(), imgUserIcon);
+
+
     }
 
     @Override
@@ -165,7 +167,9 @@ public class SingleItemView extends Activity {
         @Override
         protected Void doInBackground(Void... params) {
             // Create an array
+            if(replyList == null) replyList = new  ArrayList<ReplyContentsVO>();
             String rUrl2;
+            String replyTxt="";
             int rPage;
 
             try {
@@ -213,17 +217,6 @@ public class SingleItemView extends Activity {
                 longDate = atitle.get(1).text();
                 longCon =  ttt.select("div[class=boardReadBody]").first().html();
 
-                //유튜브 올렸을때 화면에서 재생할수 있도록 소스 수정
-                /*
-                String k1 = longCon.replaceAll("object\\s", "iframe ");
-                String k2 = k1.replace("><param name=\"movie\" value=\"https://www.youtube.com/v", " src=\"https://www.youtube.com/embed");
-                String k3 = k2.replace("<param name=\"allowFullScreen\" value=\"true\"><param name=\"allowscriptaccess\" value=\"always\"><embed src=\"https://www.youtube.com/v/","");
-                String k4 = k3.replace("=\"application/x-shockwave-flash\"", "");
-                String k5 = k4.replaceAll("\\w+\\?version=3\"\\stype", "");
-                String k6 = k5.replaceAll("\\swidth=\"\\d+\"\\sheight=\"\\d+\" allowscriptaccess=\"always\" allowfullscreen=\"true\"></object>", " frameborder=\"0\" allowfullscreen></iframe>");
-                String k7 = k6.replaceAll("(\\?)version=3", "");
-                longCon2 = k7.replace("> frameborder=\"0\" allowfullscreen></iframe>", " frameborder=\"0\" allowfullscreen></iframe>");
-*/
 
                 String k1 =longCon
                         .replaceAll("(?i)<object ", "<ke")
@@ -237,7 +230,7 @@ public class SingleItemView extends Activity {
 
                 longCon2=k1;
                 //리플 파싱
-                replyAppend(rUrl2,rPage);
+                replyTxt=replyAppend(rUrl2,rPage);
 
 
 
@@ -245,17 +238,67 @@ public class SingleItemView extends Activity {
             } catch (IOException e) {
                 // TODO Auto-generated catch block
                 e.printStackTrace();
+                replyTxt ="";
             }
+            // 리스트뷰에 리플 넣기위해서 분리
+            Document replyDoc = Jsoup.parse(replyTxt);
+            //리플 한개한개 분리
+            Elements replyItems = replyDoc.select("div[class^=item]");
 
+            for (org.jsoup.nodes.Element oneReplyHtml : replyItems) {
+                ReplyContentsVO replyContentsVO = new ReplyContentsVO();
+                String replyNum = oneReplyHtml.attr("id").replace("comment_", "");
+                //리플 번호
+                replyContentsVO.setReplyNumber(replyNum);
+                //리플 마진
+                Element forReplyMargin = oneReplyHtml.select("div[class=indent").first();
+                String replyMargin = forReplyMargin.attr("style");
+                if (replyMargin.contains("margin-left")){
+                    replyContentsVO.setRplyMargin(replyMargin.replace("margin-left:","").replace("px",""));
+                } else{
+                    replyContentsVO.setRplyMargin("0");
+                }
+
+                Element forGetData = oneReplyHtml.select("div[class=auther").first();
+                //아이콘 추출
+                Elements imgSrc = forGetData.select("img[src]");
+                replyContentsVO.setUserIcon(imgSrc.attr("src"));
+
+                //날짜 추출
+                Elements replyDt = forGetData.select("font[color=gray]");
+                replyContentsVO.setReplyDt(replyDt.text());
+                //유저 추출
+                Elements  replyUser = forGetData.select("Strong");
+                replyContentsVO.setReplyUser(replyUser.text());
+
+                //내용 추출
+                Element replyCon = oneReplyHtml.select("div[class$=xe_content").first();
+                replyContentsVO.setReplyContent(replyCon.html());
+
+                //자기가쓴글 여부
+                Element yN = forGetData.select("span[class=replyOption").first();
+                Elements writeYn = yN.select("a");
+                String wrYn= writeYn.get(0).text();
+                if (wrYn == "..." || "...".equals(wrYn)){
+                    replyContentsVO.setReplyMineYn("N");
+                }else{
+                    replyContentsVO.setReplyMineYn("Y");
+                }
+                replyList.add(replyContentsVO);
+            }
+            //리플 add완료
+            Log.v("te","te");
             return null;
         }
 
         @Override
         protected void onPostExecute(Void result) {
-            // Locate the listview in listview_main.xml
-            TextView txtsubject = (TextView) findViewById(R.id.ssubject);
-            //TextView txtcontents = (TextView) findViewById(R.id.contentUrl);
-            TextView txtreply = (TextView) findViewById(R.id.sreply);
+            TextView txtSubject = (TextView) findViewById(R.id.singleSubject);
+            TextView txtDate = (TextView) findViewById(R.id.singleDate);
+            int dateLength = longDate.length();
+            String aDate = longDate.substring(dateLength-19,dateLength);
+            txtSubject.setText(longTitle);
+            txtDate.setText(aDate);
             WebView wb = (WebView) findViewById(R.id.webView);
 
             //이미지,아이프레임 리사이징과 자바스크립트 설정, 한글구현
@@ -264,24 +307,22 @@ public class SingleItemView extends Activity {
             wb.loadData("<style>img{width:100% !important;}</style><style>iframe{width:100% !important;}</style>"
                                         +longCon2, "text/html; charset=UTF-8", null);
 
-            int dateLength = longDate.length();
-            String aDate = longDate.substring(dateLength-19,dateLength);
-            txtsubject.setText(longTitle);
-            txtreply.setText(aDate);
-            //txtcontents.setText(longCon);
 
+
+            //txtcontents.setText(longCon);
 
             replyListview = (ListView)findViewById(R.id.replyListview);
             replyAdapter= new ReplyListViewAdapter(SingleItemView.this,replyList);
             replyListview.setAdapter(replyAdapter);
         }
+
         //리플 파싱
-        protected void replyAppend(String url,int page) {
+        protected String replyAppend(String url,int page) {
             int totalReplyPageNumber = page;
             int currentReplyPageNumber = 1;
             String replyUrl;
             StringBuffer replyContents = new StringBuffer();
-            if(replyList == null) replyList = new  ArrayList<ReplyContentsVO>();
+
             //리플페이지 갯수로 리플 파싱
             if (page==0){
                 //리플 페이지가 한페이지만 있으면
@@ -362,55 +403,9 @@ public class SingleItemView extends Activity {
                 }
                 longCon3 = replyContents.toString();
             }
-            Document replyDoc = Jsoup.parse(longCon3);
-            //리플 한개한개 분리
-            Elements replyItems = replyDoc.select("div[class^=item]");
 
-            for (org.jsoup.nodes.Element oneReplyHtml : replyItems) {
-                ReplyContentsVO replyContentsVO = new ReplyContentsVO();
-                String replyNum = oneReplyHtml.attr("id").replace("comment_", "");
-                //리플 번호
-                replyContentsVO.setReplyNumber(replyNum);
-                //리플 마진
-                Element forReplyMargin = oneReplyHtml.select("div[class=indent").first();
-                String replyMargin = forReplyMargin.attr("style");
-                if (replyMargin.contains("margin-left")){
-                    replyContentsVO.setRplyMargin(replyMargin.replace("margin-left:","").replace("px",""));
-                } else{
-                    replyContentsVO.setRplyMargin("0");
-                }
 
-                Element forGetData = oneReplyHtml.select("div[class=auther").first();
-                //아이콘 추출
-                Elements imgSrc = forGetData.select("img[src]");
-                replyContentsVO.setUserIcon(imgSrc.attr("src"));
-
-                //날짜 추출
-                Elements replyDt = forGetData.select("font[color=gray]");
-                replyContentsVO.setReplyDt(replyDt.text());
-                //유저 추출
-                Elements  replyUser = forGetData.select("Strong");
-                replyContentsVO.setReplyUser(replyUser.text());
-
-                //내용 추출
-                Element replyCon = oneReplyHtml.select("div[class$=xe_content").first();
-                replyContentsVO.setReplyContent(replyCon.html());
-
-                //자기가쓴글 여부
-                Element yN = forGetData.select("span[class=replyOption").first();
-                Elements writeYn = yN.select("a");
-                String wrYn= writeYn.get(0).text();
-                if (wrYn == "..." || "...".equals(wrYn)){
-                    replyContentsVO.setReplyMineYn("N");
-                }else{
-                    replyContentsVO.setReplyMineYn("Y");
-                }
-
-                replyList.add(replyContentsVO);
-
-            }
-            //리플 add완료
-            Log.v("te","te");
+            return longCon3;
         }
 
     }

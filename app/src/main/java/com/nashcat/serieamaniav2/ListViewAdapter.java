@@ -55,7 +55,7 @@ public class ListViewAdapter extends BaseAdapter {
         return 0;
     }
 
-    public View getView(final int position, View convertView, ViewGroup parent) {
+    public View getView(final int position, View itemView, ViewGroup parent) {
         // Declare Variables
         TextView number;
         TextView subject;
@@ -67,7 +67,10 @@ public class ListViewAdapter extends BaseAdapter {
         inflater = (LayoutInflater) context
                 .getSystemService(Context.LAYOUT_INFLATER_SERVICE);
 
-        View itemView = inflater.inflate(R.layout.listview_item, parent, false);
+        if (itemView == null) {
+            itemView = inflater.inflate(R.layout.listview_item, parent, false);
+        }
+
         // Get the position
 
         resultVO = contentsData.get(position);
