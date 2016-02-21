@@ -9,7 +9,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_alignParentTop="true"
-        android:layout_above="@+id/replyLinearLayout"
+
         android:layout_alignParentLeft="true"
         android:fillViewport="true">
         android:id="@+id/singleScrollView">
@@ -265,7 +265,20 @@
             </LinearLayout>
         </LinearLayout>
     </LinearLayout>
-
+    <LinearLayout
+        android:layout_height="match_parent"
+        android:layout_width="match_parent"
+        android:orientation="horizontal"
+        android:layout_below="@id/SIVLinearLayout2"
+        android:visibility="invisible"
+        >
+        <WebView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:id="@+id/dummyWebView"
+            android:layout_centerHorizontal="true"
+            />
+    </LinearLayout>
 
 
 </RelativeLayout>

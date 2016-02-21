@@ -6,6 +6,7 @@ import android.os.AsyncTask;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.KeyEvent;
+import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.webkit.WebSettings;
@@ -37,7 +38,7 @@ import java.util.Map;
  */
 public class SingleItemView extends Activity {
     static final int LOGIN_REQUEST_CODE = 100;
-
+    LayoutInflater inflater;
     ListView replyListview;
     ReplyListViewAdapter replyAdapter;
     String longTitle,longCon,longCon2,longCon3, longDate ;
@@ -46,7 +47,9 @@ public class SingleItemView extends Activity {
     ImageView bannerimg;
     BoardContentsVO boardContentsVO = null;
     DefaultVO userVo = new DefaultVO();
-    int m_iCommentWidth;
+
+
+
 
 //    ListView listview2;
     //ListViewReplyAdapter adapter2;
@@ -273,8 +276,9 @@ public class SingleItemView extends Activity {
 
                 //내용 추출
                 Element replyCon = oneReplyHtml.select("div[class$=xe_content").first();
-
                 replyContentsVO.setReplyContent(replyCon.html());
+
+
 
                 //자기가쓴글 여부
                 Element yN = forGetData.select("span[class=replyOption").first();
@@ -285,6 +289,7 @@ public class SingleItemView extends Activity {
                 }else{
                     replyContentsVO.setReplyMineYn("Y");
                 }
+
                 replyList.add(replyContentsVO);
             }
             //리플 add완료
@@ -306,7 +311,7 @@ public class SingleItemView extends Activity {
             wb.getSettings().setLayoutAlgorithm(WebSettings.LayoutAlgorithm.SINGLE_COLUMN);
             wb.getSettings().setJavaScriptEnabled(true);
             wb.loadData("<style>img{width:100% !important;}</style><style>iframe{width:100% !important;}</style>"
-                                        +longCon2, "text/html; charset=UTF-8", null);
+                    + longCon2, "text/html; charset=UTF-8", null);
 
 
 
