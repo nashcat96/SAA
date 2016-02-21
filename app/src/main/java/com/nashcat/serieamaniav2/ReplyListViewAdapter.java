@@ -5,6 +5,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.view.ViewGroup;
+import android.webkit.WebSettings;
 import android.webkit.WebView;
 import android.widget.BaseAdapter;
 import android.widget.ImageView;
@@ -96,9 +97,9 @@ public class ReplyListViewAdapter extends BaseAdapter {
         replyMineYn = (TextView) replyItemView.findViewById(R.id.txtView_reply_mine_yn);
         replyContents = (WebView) replyItemView.findViewById(R.id.replyWebView);
         //내용
-//        replyContents.getSettings().setLayoutAlgorithm(WebSettings.LayoutAlgorithm.SINGLE_COLUMN);
-//        replyContents.getSettings().setJavaScriptEnabled(true);
-//        replyContents.loadData(resultVO.getReplyContent(), "text/html; charset=UTF-8", null);
+        replyContents.getSettings().setLayoutAlgorithm(WebSettings.LayoutAlgorithm.SINGLE_COLUMN);
+        replyContents.getSettings().setJavaScriptEnabled(true);
+        replyContents.loadData(resultVO.getReplyContent(), "text/html; charset=UTF-8", null);
 
         RelativeLayout rReply=(RelativeLayout) replyItemView.findViewById(R.id.relativeMargin);
         // Capture position and set results to the TextViews

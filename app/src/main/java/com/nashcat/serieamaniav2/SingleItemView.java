@@ -4,20 +4,19 @@ import android.app.Activity;
 import android.content.Intent;
 import android.os.AsyncTask;
 import android.os.Bundle;
-import android.os.Handler;
-import android.os.Looper;
 import android.util.Log;
 import android.view.KeyEvent;
 import android.view.View;
+import android.view.ViewGroup;
 import android.webkit.WebSettings;
 import android.webkit.WebView;
 import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
+import android.widget.ListAdapter;
 import android.widget.ListView;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import com.nashcat.serieamaniav2.vo.BoardContentsVO;
 import com.nashcat.serieamaniav2.vo.DefaultVO;
@@ -47,6 +46,7 @@ public class SingleItemView extends Activity {
     ImageView bannerimg;
     BoardContentsVO boardContentsVO = null;
     DefaultVO userVo = new DefaultVO();
+    int m_iCommentWidth;
 
 //    ListView listview2;
     //ListViewReplyAdapter adapter2;
@@ -175,21 +175,21 @@ public class SingleItemView extends Activity {
             try {
 
                 //쿠키가 없으면 다시 로그인으로
-                if (userVo.getLoginCookies().isEmpty() || "N".equals(userVo.getLoginYn())){
-
-                    //java.lang.RuntimeException: Can't create handler inside thread that has not called Looper.prepare() 방지
-                    Handler mHandler = new Handler(Looper.getMainLooper());
-                    mHandler.postDelayed(new Runnable() {
-                        @Override
-                        public void run() {
-                            Toast.makeText(getApplicationContext(), "로그인 쿠키가 없습니다. 다시로그인해 주세요", Toast.LENGTH_SHORT).show();
-                        }
-                    }, 0);
-
-                    loginAct();
-                    return null;
-
-                }
+//                if (userVo.getLoginCookies().isEmpty() || "N".equals(userVo.getLoginYn())){
+//
+//                    //java.lang.RuntimeException: Can't create handler inside thread that has not called Looper.prepare() 방지
+//                    Handler mHandler = new Handler(Looper.getMainLooper());
+//                    mHandler.postDelayed(new Runnable() {
+//                        @Override
+//                        public void run() {
+//                            Toast.makeText(getApplicationContext(), "로그인 쿠키가 없습니다. 다시로그인해 주세요", Toast.LENGTH_SHORT).show();
+//                        }
+//                    }, 0);
+//
+//                    loginAct();
+//                    return null;
+//
+//                }
                 Map<String, String> loginCookies = userVo.getLoginCookies();
                 // Connect to the Website URL
                 Document doc = Jsoup.connect(boardContentsVO.getContentUrl()).cookies(loginCookies).get();
@@ -273,6 +273,7 @@ public class SingleItemView extends Activity {
 
                 //내용 추출
                 Element replyCon = oneReplyHtml.select("div[class$=xe_content").first();
+
                 replyContentsVO.setReplyContent(replyCon.html());
 
                 //자기가쓴글 여부
@@ -314,6 +315,7 @@ public class SingleItemView extends Activity {
             replyListview = (ListView)findViewById(R.id.replyListview);
             replyAdapter= new ReplyListViewAdapter(SingleItemView.this,replyList);
             replyListview.setAdapter(replyAdapter);
+            setListViewHeightBasedOnChildren(replyListview);
         }
 
         //리플 파싱
@@ -409,4 +411,27 @@ public class SingleItemView extends Activity {
         }
 
     }
+    public static void setListViewHeightBasedOnChildren(ListView listView) {
+        ListAdapter listAdapter = listView.getAdapter();
+        if (listAdapter == null) {
+            // pre-condition
+            return;
+        }
+
+        int totalHeight = 0;
+        int desiredWidth = View.MeasureSpec.makeMeasureSpec(listView.getWidth(), View.MeasureSpec.AT_MOST);
+        View replyListItem = null;
+        for (int i = 0; i < listAdapter.getCount(); i++) {
+            replyListItem = listAdapter.getView(i, replyListItem, listView);
+            replyListItem.measure(desiredWidth, View.MeasureSpec.UNSPECIFIED);
+            totalHeight += replyListItem.getMeasuredHeight();
+        }
+
+        ViewGroup.LayoutParams params = listView.getLayoutParams();
+        params.height = totalHeight + (listView.getDividerHeight() * (listAdapter.getCount() - 1));
+        listView.setLayoutParams(params);
+        listView.requestLayout();
+    }
+
+
 }
