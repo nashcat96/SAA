@@ -26,6 +26,16 @@ public class BoardContentsVO extends DefaultVO implements Serializable {
     /** URL */
     private String contentUrl;
 
+    private String replyCnt;
+
+    public String getReplyCnt() {
+        return replyCnt;
+    }
+
+    public void setReplyCnt(String replyCnt) {
+        this.replyCnt = replyCnt;
+    }
+
     public String getContentUrl() {
         return contentUrl;
     }

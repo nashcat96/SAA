@@ -6,13 +6,14 @@
     android:gravity="center|top"
     style="@style/AppTheme.NoActionBar">
     <ScrollView
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
         android:layout_alignParentTop="true"
-
+        android:id="@+id/single_Subject_Area_Layout"
+        android:layout_above="@+id/SIVLinearLayout2"
         android:layout_alignParentLeft="true"
         android:fillViewport="true">
-        android:id="@+id/singleScrollView">
+
 
         <RelativeLayout
             android:layout_width="match_parent"
@@ -91,7 +92,7 @@
                 android:layout_alignParentStart="true" />
 
             <WebView
-                android:layout_width="wrap_content"
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:id="@+id/webView"
                 android:layout_below="@+id/separator" />
@@ -106,27 +107,56 @@
                 android:layout_alignParentLeft="true"
                 android:layout_alignParentStart="true" />
 
-            <TextView
-                android:id="@+id/replytext"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_below="@+id/separator2"
-                android:text="@string/content_reply"
-                android:paddingLeft="7dp"
-                android:paddingRight="7dp"  />
-            <ListView
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:id="@+id/replyListview"
-                android:layout_below="@+id/replytext"
-                android:layout_alignParentLeft="true"
-                android:layout_alignParentStart="true">
-
-            </ListView>
-
         </RelativeLayout>
 
     </ScrollView>
+    <LinearLayout
+        android:id="@+id/single_Reply_Area_Layout"
+        android:layout_height="match_parent"
+        android:layout_width="match_parent"
+        android:layout_alignParentTop="true"
+        android:background="#FFFFFF"
+        android:layout_alignParentLeft="true"
+        android:layout_above="@+id/SIVLinearLayout2"
+        android:visibility="invisible">
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:background="#FFFFFF">
+            <TextView
+                android:id="@+id/replytext"
+                android:textSize="16dp"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/content_reply"
+                android:layout_alignParentLeft="true"
+                android:layout_alignParentStart="true"
+                android:paddingTop="7dp"
+                android:paddingLeft="7dp"
+                android:paddingRight="7dp"  />
+
+            <View android:id="@+id/reply_separator1"
+                android:background="#888888"
+                android:layout_width = "wrap_content"
+                android:layout_height="1dip"
+                android:layout_below="@+id/replytext"
+                android:layout_marginTop="4dp"
+                android:layout_marginBottom="4dp"
+                android:layout_alignParentLeft="true"
+                android:layout_alignParentStart="true" />
+
+            <ListView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_below="@+id/reply_separator1"
+                android:id="@+id/replyListview"
+                android:layout_alignParentLeft="true"
+                android:gravity="top"
+                >
+
+            </ListView>
+        </RelativeLayout>
+    </LinearLayout>
 
     <LinearLayout
         android:id="@+id/SIVLinearLayout2"
@@ -199,6 +229,60 @@
             android:orientation="horizontal"
             android:gravity="center"
             >
+            <!-- 본문 버튼-->
+            <LinearLayout
+                android:layout_height="match_parent"
+                android:layout_width="0px"
+                android:layout_weight="1"
+                android:gravity="center"
+                android:id="@+id/single_subject_layout"
+                android:background="#FFF2F2F2">
+                <ImageButton
+                    android:layout_width="30dp"
+                    android:layout_height="30dp"
+                    android:id="@+id/singleview_btn_subject_area"
+                    android:src="@drawable/ic_reorder_24dp"
+                    android:scaleType="fitXY"
+                    android:background="@null" />
+            </LinearLayout>
+            <!-- 리플 버튼-->
+            <LinearLayout
+                android:layout_height="match_parent"
+                android:layout_width="0px"
+                android:layout_weight="1"
+                android:gravity="center"
+                android:id="@+id/single_reply_layout"
+                android:background="#FFAAAAAA">
+                <ImageButton
+                    android:layout_width="30dp"
+                    android:layout_height="30dp"
+                    android:id="@+id/singleview_btn_reply_area"
+                    android:src="@drawable/ic_list_24dp"
+                    android:scaleType="fitXY"
+                    android:background="@null" />
+                <TextView
+                    android:id="@+id/replyCount"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+
+                    android:paddingLeft="2dp"
+                    android:paddingRight="2dp"
+                    />
+            </LinearLayout>
+            <!-- 세로줄 -->
+            <LinearLayout
+                android:layout_height="match_parent"
+                android:layout_width = "1dp"
+                android:gravity="center"
+                >
+                <View android:id="@+id/separatorReply"
+                    android:background="#888888"
+                    android:layout_width = "1dip"
+                    android:layout_height="30dp"
+
+                    />
+            </LinearLayout>
+
             <!-- 글삭제 버튼-->
             <LinearLayout
                 android:layout_height="match_parent"
@@ -226,7 +310,7 @@
                 <ImageButton
                     android:layout_width="30dp"
                     android:layout_height="30dp"
-                    android:id="@+id/singleview_btn_reply"
+                    android:id="@+id/singleview_btn_set_reply"
                     android:src="@drawable/ic_forum_24dp"
                     android:scaleType="fitXY"
                     android:visibility="gone"

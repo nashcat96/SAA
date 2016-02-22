@@ -2,6 +2,7 @@ package com.nashcat.serieamaniav2;
 
 import android.app.Activity;
 import android.content.Intent;
+import android.graphics.Color;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.util.Log;
@@ -17,6 +18,7 @@ import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.ListAdapter;
 import android.widget.ListView;
+import android.widget.ScrollView;
 import android.widget.TextView;
 
 import com.nashcat.serieamaniav2.vo.BoardContentsVO;
@@ -47,7 +49,7 @@ public class SingleItemView extends Activity {
     ImageView bannerimg;
     BoardContentsVO boardContentsVO = null;
     DefaultVO userVo = new DefaultVO();
-
+    String replyCount;
 
 
 
@@ -65,8 +67,15 @@ public class SingleItemView extends Activity {
         final ImageButton imgBtnRepltDone = (ImageButton)findViewById(R.id.btn_reply_done);
         final ImageButton imgBtnTool = (ImageButton)findViewById(R.id.singleview_btn_tool);
         final ImageButton imgBtnEdit = (ImageButton)findViewById(R.id.singleview_btn_edit);
-        final ImageButton imgBtnReply = (ImageButton)findViewById(R.id.singleview_btn_reply);
+        final ImageButton imgBtnSetReply = (ImageButton)findViewById(R.id.singleview_btn_set_reply);
         final ImageButton imgBtnDelete = (ImageButton)findViewById(R.id.singleview_btn_delete);
+        final ImageButton imgBtnSubject = (ImageButton)findViewById(R.id.singleview_btn_subject_area);
+        final ImageButton imgBtnReply = (ImageButton)findViewById(R.id.singleview_btn_reply_area);
+        final LinearLayout singleSubjectLinear = (LinearLayout)findViewById(R.id.single_subject_layout);
+        final LinearLayout singleReplyLinear = (LinearLayout)findViewById(R.id.single_reply_layout);
+        final LinearLayout singleReplyArea = (LinearLayout)findViewById(R.id.single_Reply_Area_Layout);
+        final ScrollView singleSubjectArea = (ScrollView)findViewById(R.id.single_Subject_Area_Layout);
+
         //툴버튼을 누르면 리플을 달수있는 에디트텍스트와 버튼이 보이게, 보여져 있는 상태면 감추기
         imgBtnTool.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -74,17 +83,39 @@ public class SingleItemView extends Activity {
                if (replyLinear.getVisibility()== View.VISIBLE){
                    replyLinear.setVisibility(View.GONE);
                    imgBtnEdit.setVisibility(View.GONE);
-                   imgBtnReply.setVisibility(View.GONE);
+                   imgBtnSetReply.setVisibility(View.GONE);
                    imgBtnDelete.setVisibility(View.GONE);
                    imgBtnTool.setImageResource(R.drawable.ic_expand_less_24dp);
 
                } else {
                    replyLinear.setVisibility(View.VISIBLE);
                    imgBtnEdit.setVisibility(View.VISIBLE);
-                   imgBtnReply.setVisibility(View.VISIBLE);
+                   imgBtnSetReply.setVisibility(View.VISIBLE);
                    imgBtnDelete.setVisibility(View.VISIBLE);
                    imgBtnTool.setImageResource(R.drawable.ic_expand_more_24dp);
                }
+
+            }
+        });
+        imgBtnSubject.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                singleSubjectLinear.setBackgroundColor(Color.parseColor("#FFF2F2F2"));
+                singleReplyLinear.setBackgroundColor(Color.parseColor("#FFAAAAAA"));
+                singleSubjectArea.setVisibility(View.VISIBLE);
+                singleReplyArea.setVisibility(View.INVISIBLE);
+
+
+            }
+        });
+        imgBtnReply.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                singleSubjectLinear.setBackgroundColor(Color.parseColor("#FFAAAAAA"));
+                singleReplyLinear.setBackgroundColor(Color.parseColor("#FFF2F2F2"));
+                singleSubjectArea.setVisibility(View.INVISIBLE);
+                singleReplyArea.setVisibility(View.VISIBLE);
+
 
             }
         });
@@ -106,6 +137,8 @@ public class SingleItemView extends Activity {
         boardContentsVO.setUserIcon(i.getStringExtra("userIcon"));
         // Get the result of url
         boardContentsVO.setContentUrl(i.getStringExtra("contentUrl"));
+        // Get the result of replyCnt
+        boardContentsVO.setReplyCnt(i.getStringExtra("replyCnt"));
         bannerimg=(ImageView) findViewById(R.id.imgtitle);
 
         // Locate the TextViews in singleitemview.xml
@@ -194,6 +227,8 @@ public class SingleItemView extends Activity {
 //
 //                }
                 Map<String, String> loginCookies = userVo.getLoginCookies();
+
+                replyCount=boardContentsVO.getReplyCnt();
                 // Connect to the Website URL
                 Document doc = Jsoup.connect(boardContentsVO.getContentUrl()).cookies(loginCookies).get();
                 // Identify Table Class "worldpopulation"
@@ -247,7 +282,7 @@ public class SingleItemView extends Activity {
             Document replyDoc = Jsoup.parse(replyTxt);
             //리플 한개한개 분리
             Elements replyItems = replyDoc.select("div[class^=item]");
-
+            int i=0;
             for (org.jsoup.nodes.Element oneReplyHtml : replyItems) {
                 ReplyContentsVO replyContentsVO = new ReplyContentsVO();
                 String replyNum = oneReplyHtml.attr("id").replace("comment_", "");
@@ -289,7 +324,7 @@ public class SingleItemView extends Activity {
                 }else{
                     replyContentsVO.setReplyMineYn("Y");
                 }
-
+                i++;
                 replyList.add(replyContentsVO);
             }
             //리플 add완료
@@ -306,8 +341,10 @@ public class SingleItemView extends Activity {
             txtSubject.setText(longTitle);
             txtDate.setText(aDate);
             WebView wb = (WebView) findViewById(R.id.webView);
+            TextView textViewReplyCount = (TextView) findViewById(R.id.replyCount);
 
             //이미지,아이프레임 리사이징과 자바스크립트 설정, 한글구현
+            textViewReplyCount.setText(replyCount);
             wb.getSettings().setLayoutAlgorithm(WebSettings.LayoutAlgorithm.SINGLE_COLUMN);
             wb.getSettings().setJavaScriptEnabled(true);
             wb.loadData("<style>img{width:100% !important;}</style><style>iframe{width:100% !important;}</style>"

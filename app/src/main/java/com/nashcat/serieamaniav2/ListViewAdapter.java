@@ -119,6 +119,8 @@ public class ListViewAdapter extends BaseAdapter {
                 intent.putExtra("name", resultVO.getName());
                 // Pass all data userIcon
                 intent.putExtra("userIcon", resultVO.getUserIcon());
+                // Pass all data replyCnt
+                intent.putExtra("replyCnt", resultVO.getReplyCnt());
                 // Start SingleItemView Class
                 intent.putExtra("phpsessid", phpsessid);
                 context.startActivity(intent);

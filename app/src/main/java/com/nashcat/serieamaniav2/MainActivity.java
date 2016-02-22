@@ -352,9 +352,11 @@ public class MainActivity extends AppCompatActivity
                             subjexttext2 = subjexttext.substring(0, sublength - replylength);
                             //** contentList에 리플갯수 넣기(리플이 있는 경우) */
                             boardContentsVO.setReply("|  reply: " + replytext);
+                            boardContentsVO.setReplyCnt(replytext);
                         } else {
                             //** contentList에 리플갯수 넣기(리플이 없는 경우) */
                             boardContentsVO.setReply("|  reply: 0");
+                            boardContentsVO.setReplyCnt("0");
                             subjexttext2 = tds.get(1).text();
                         }
 
