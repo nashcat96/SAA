@@ -9,14 +9,12 @@ import android.util.Log;
 import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.View;
-import android.view.ViewGroup;
 import android.webkit.WebSettings;
 import android.webkit.WebView;
 import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
-import android.widget.ListAdapter;
 import android.widget.ListView;
 import android.widget.ScrollView;
 import android.widget.TextView;
@@ -47,6 +45,7 @@ public class SingleItemView extends Activity {
     ArrayList<ReplyContentsVO> replyList;
     ImageLoader imageLoader = new ImageLoader(this);
     ImageView bannerimg;
+    ImageView bannerimg2;
     BoardContentsVO boardContentsVO = null;
     DefaultVO userVo = new DefaultVO();
     String replyCount;
@@ -67,7 +66,7 @@ public class SingleItemView extends Activity {
         final ImageButton imgBtnRepltDone = (ImageButton)findViewById(R.id.btn_reply_done);
         final ImageButton imgBtnTool = (ImageButton)findViewById(R.id.singleview_btn_tool);
         final ImageButton imgBtnEdit = (ImageButton)findViewById(R.id.singleview_btn_edit);
-        final ImageButton imgBtnSetReply = (ImageButton)findViewById(R.id.singleview_btn_set_reply);
+
         final ImageButton imgBtnDelete = (ImageButton)findViewById(R.id.singleview_btn_delete);
         final ImageButton imgBtnSubject = (ImageButton)findViewById(R.id.singleview_btn_subject_area);
         final ImageButton imgBtnReply = (ImageButton)findViewById(R.id.singleview_btn_reply_area);
@@ -83,14 +82,14 @@ public class SingleItemView extends Activity {
                if (replyLinear.getVisibility()== View.VISIBLE){
                    replyLinear.setVisibility(View.GONE);
                    imgBtnEdit.setVisibility(View.GONE);
-                   imgBtnSetReply.setVisibility(View.GONE);
+
                    imgBtnDelete.setVisibility(View.GONE);
                    imgBtnTool.setImageResource(R.drawable.ic_expand_less_24dp);
 
                } else {
                    replyLinear.setVisibility(View.VISIBLE);
                    imgBtnEdit.setVisibility(View.VISIBLE);
-                   imgBtnSetReply.setVisibility(View.VISIBLE);
+
                    imgBtnDelete.setVisibility(View.VISIBLE);
                    imgBtnTool.setImageResource(R.drawable.ic_expand_more_24dp);
                }
@@ -104,6 +103,7 @@ public class SingleItemView extends Activity {
                 singleReplyLinear.setBackgroundColor(Color.parseColor("#FFAAAAAA"));
                 singleSubjectArea.setVisibility(View.VISIBLE);
                 singleReplyArea.setVisibility(View.INVISIBLE);
+                singleSubjectArea.scrollTo(0,0);
 
 
             }
@@ -140,7 +140,7 @@ public class SingleItemView extends Activity {
         // Get the result of replyCnt
         boardContentsVO.setReplyCnt(i.getStringExtra("replyCnt"));
         bannerimg=(ImageView) findViewById(R.id.imgtitle);
-
+        bannerimg2=(ImageView) findViewById(R.id.imgtitle2);
         // Locate the TextViews in singleitemview.xml
 
         TextView txtName = (TextView) findViewById(R.id.singleName);
@@ -151,21 +151,28 @@ public class SingleItemView extends Activity {
 
 
 
+
+
         switch (MainActivity.TYPEC) {
             case 1:
                 bannerimg.setImageResource(R.drawable.cal_hd);
+                bannerimg2.setImageResource(R.drawable.cal_hd);
                 break;
             case 2:
                 bannerimg.setImageResource(R.drawable.free_hd);
+                bannerimg2.setImageResource(R.drawable.free_hd);
                 break;
             case 3:
                 bannerimg.setImageResource(R.drawable.multi_hd);
+                bannerimg2.setImageResource(R.drawable.free_hd);
                 break;
             case 4:
                 bannerimg.setImageResource(R.drawable.qna_hd);
+                bannerimg2.setImageResource(R.drawable.free_hd);
                 break;
             case 5:
                 bannerimg.setImageResource(R.drawable.bro_hd);
+                bannerimg2.setImageResource(R.drawable.free_hd);
                 break;
 
         }
@@ -336,9 +343,11 @@ public class SingleItemView extends Activity {
         protected void onPostExecute(Void result) {
             TextView txtSubject = (TextView) findViewById(R.id.singleSubject);
             TextView txtDate = (TextView) findViewById(R.id.singleDate);
+            TextView txtReply = (TextView) findViewById(R.id.replytext);
             int dateLength = longDate.length();
             String aDate = longDate.substring(dateLength-19,dateLength);
             txtSubject.setText(longTitle);
+            txtReply.setText(longTitle);
             txtDate.setText(aDate);
             WebView wb = (WebView) findViewById(R.id.webView);
             TextView textViewReplyCount = (TextView) findViewById(R.id.replyCount);
@@ -357,7 +366,7 @@ public class SingleItemView extends Activity {
             replyListview = (ListView)findViewById(R.id.replyListview);
             replyAdapter= new ReplyListViewAdapter(SingleItemView.this,replyList);
             replyListview.setAdapter(replyAdapter);
-            setListViewHeightBasedOnChildren(replyListview);
+
         }
 
         //리플 파싱
@@ -452,27 +461,6 @@ public class SingleItemView extends Activity {
             return longCon3;
         }
 
-    }
-    public static void setListViewHeightBasedOnChildren(ListView listView) {
-        ListAdapter listAdapter = listView.getAdapter();
-        if (listAdapter == null) {
-            // pre-condition
-            return;
-        }
-
-        int totalHeight = 0;
-        int desiredWidth = View.MeasureSpec.makeMeasureSpec(listView.getWidth(), View.MeasureSpec.AT_MOST);
-        View replyListItem = null;
-        for (int i = 0; i < listAdapter.getCount(); i++) {
-            replyListItem = listAdapter.getView(i, replyListItem, listView);
-            replyListItem.measure(desiredWidth, View.MeasureSpec.UNSPECIFIED);
-            totalHeight += replyListItem.getMeasuredHeight();
-        }
-
-        ViewGroup.LayoutParams params = listView.getLayoutParams();
-        params.height = totalHeight + (listView.getDividerHeight() * (listAdapter.getCount() - 1));
-        listView.setLayoutParams(params);
-        listView.requestLayout();
     }
 
 
