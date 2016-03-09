@@ -12,6 +12,7 @@ import android.view.View;
 import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.nashcat.serieamaniav2.vo.DefaultVO;
 
@@ -164,6 +165,10 @@ public class WriteActivity extends AppCompatActivity {
             String kk = e.toString();
             Log.e("result",kk);
         }
+
+        Toast clsToast = Toast.makeText( this, "데이터를 전송하였습니다. 앱/xe 상태에 따라 글이 등록되지 않을수 있습니다.", Toast.LENGTH_LONG );
+        clsToast.show( );
+
         finish();
 
     }

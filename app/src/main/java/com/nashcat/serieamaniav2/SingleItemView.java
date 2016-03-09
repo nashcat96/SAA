@@ -5,6 +5,8 @@ import android.content.Intent;
 import android.graphics.Color;
 import android.os.AsyncTask;
 import android.os.Bundle;
+import android.os.Handler;
+import android.os.Looper;
 import android.util.Log;
 import android.view.KeyEvent;
 import android.view.LayoutInflater;
@@ -18,6 +20,7 @@ import android.widget.LinearLayout;
 import android.widget.ListView;
 import android.widget.ScrollView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.nashcat.serieamaniav2.vo.BoardContentsVO;
 import com.nashcat.serieamaniav2.vo.DefaultVO;
@@ -28,7 +31,13 @@ import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
 
+import java.io.BufferedReader;
 import java.io.IOException;
+import java.io.InputStreamReader;
+import java.io.OutputStream;
+import java.net.HttpURLConnection;
+import java.net.MalformedURLException;
+import java.net.URL;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
@@ -49,9 +58,10 @@ public class SingleItemView extends Activity {
     BoardContentsVO boardContentsVO = null;
     DefaultVO userVo = new DefaultVO();
     String replyCount;
-
-
-
+    String replyText;
+    String myResult;
+    String txtMid=null;
+    String numResult;
 //    ListView listview2;
     //ListViewReplyAdapter adapter2;
 
@@ -61,6 +71,7 @@ public class SingleItemView extends Activity {
         // Get the view from singleitemview.xml
         setContentView(R.layout.singleitemview);
         final EditText editTxtReply = (EditText)findViewById(R.id.textEditReply);
+
         final LinearLayout replyLinear = (LinearLayout)findViewById(R.id.reply_linear);
         final ImageButton imgBtnReplyCamera = (ImageButton)findViewById(R.id.btn_reply_camera);
         final ImageButton imgBtnRepltDone = (ImageButton)findViewById(R.id.btn_reply_done);
@@ -74,6 +85,8 @@ public class SingleItemView extends Activity {
         final LinearLayout singleReplyLinear = (LinearLayout)findViewById(R.id.single_reply_layout);
         final LinearLayout singleReplyArea = (LinearLayout)findViewById(R.id.single_Reply_Area_Layout);
         final ScrollView singleSubjectArea = (ScrollView)findViewById(R.id.single_Subject_Area_Layout);
+
+
 
         //툴버튼을 누르면 리플을 달수있는 에디트텍스트와 버튼이 보이게, 보여져 있는 상태면 감추기
         imgBtnTool.setOnClickListener(new View.OnClickListener() {
@@ -121,12 +134,14 @@ public class SingleItemView extends Activity {
         });
         if (boardContentsVO==null) boardContentsVO = new BoardContentsVO();
 
+
+
         Intent i = getIntent();
         // Get the result of
         Map<String, String> cook = new HashMap<>();
-        cook.put("PHPSESSID",i.getStringExtra("phpsessid"));
+        cook.put("PHPSESSID", i.getStringExtra("phpsessid"));
         userVo.setLoginCookies(cook);
-        boardContentsVO.setName(i.getStringExtra("number"));
+        boardContentsVO.setNumber(i.getStringExtra("number"));
         // Get the result of subject
         boardContentsVO.setSubject(i.getStringExtra("subject"));
         // Get the result of name
@@ -137,6 +152,11 @@ public class SingleItemView extends Activity {
         boardContentsVO.setUserIcon(i.getStringExtra("userIcon"));
         // Get the result of url
         boardContentsVO.setContentUrl(i.getStringExtra("contentUrl"));
+        String dNum = boardContentsVO.getContentUrl();
+        String dNums[] = dNum.split("&");
+        numResult = dNums[(dNums.length)-1];
+        numResult = numResult.replaceAll("[^0-9]", "");
+
         // Get the result of replyCnt
         boardContentsVO.setReplyCnt(i.getStringExtra("replyCnt"));
         bannerimg=(ImageView) findViewById(R.id.imgtitle);
@@ -150,29 +170,61 @@ public class SingleItemView extends Activity {
 
 
 
+        final ImageButton replyWriteButton = (ImageButton)findViewById(R.id.btn_reply_done);
+        replyWriteButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                replyText=editTxtReply.getText().toString();
+                if ("".equals(replyText) || replyText.isEmpty()) {
+                    //빈페이지에서는 내용없음을 알림
+                    Toast.makeText(getApplicationContext(), "내용이 비어있습니다.", Toast.LENGTH_SHORT).show();
+                } else {
+                    if (userVo.getLoginCookies().isEmpty() || "N".equals(userVo.getLoginYn())) {
+                        //java.lang.RuntimeException: Can't create handler inside thread that has not called Looper.prepare() 방지
+                        Handler mHandler = new Handler(Looper.getMainLooper());
+                        mHandler.postDelayed(new Runnable() {
+                            @Override
+                            public void run() {
+                                Toast.makeText(getApplicationContext(), "로그인 쿠키가 없습니다. 다시로그인해 주세요", Toast.LENGTH_SHORT).show();
+                            }
+                        }, 0);
+                        loginAct();
+                    } else {
+                        replyText= replyText.replaceAll("(\r\n|\n\r|\r|\n)", "<br>");
 
+                        replyPost(userVo,replyText);
+                    }
+                }
+
+            }
+        });
 
 
         switch (MainActivity.TYPEC) {
             case 1:
                 bannerimg.setImageResource(R.drawable.cal_hd);
                 bannerimg2.setImageResource(R.drawable.cal_hd);
+                txtMid="calcioboard";
                 break;
             case 2:
                 bannerimg.setImageResource(R.drawable.free_hd);
                 bannerimg2.setImageResource(R.drawable.free_hd);
+                txtMid="freeboard2";
                 break;
             case 3:
                 bannerimg.setImageResource(R.drawable.multi_hd);
-                bannerimg2.setImageResource(R.drawable.free_hd);
+                bannerimg2.setImageResource(R.drawable.multi_hd);
+                txtMid="multimedia1";
                 break;
             case 4:
                 bannerimg.setImageResource(R.drawable.qna_hd);
-                bannerimg2.setImageResource(R.drawable.free_hd);
+                bannerimg2.setImageResource(R.drawable.qna_hd);
+                txtMid="qna1";
                 break;
             case 5:
                 bannerimg.setImageResource(R.drawable.bro_hd);
-                bannerimg2.setImageResource(R.drawable.free_hd);
+                bannerimg2.setImageResource(R.drawable.bro_hd);
+                txtMid="broadcast1";
                 break;
 
         }
@@ -181,6 +233,81 @@ public class SingleItemView extends Activity {
 
 
     }
+
+    public void replyPost(DefaultVO userVo, String replyTxt) {
+        String phpsessid = userVo.getLoginCookies().get("PHPSESSID");
+        String txtReferer = "http://www.serieamania.com/xe/"+txtMid+"/"+numResult;
+
+        try{
+            StringBuffer buffer = new StringBuffer();
+            String sUrl = "http://www.serieamania.com/xe/?mid=" + txtMid + "&document_srl="+numResult+"&m=0&act=dispBoardReplyComment ";
+
+            buffer.append("<?xml version=\"1.0\" encoding=\"utf-8\" ?>");
+            buffer.append("<methodCall>");
+            buffer.append("<params>");
+            buffer.append("<_filter><![CDATA[insert_comment]]></_filter>");
+            buffer.append("<mid><![CDATA[").append(txtMid).append("]]></mid>");
+            buffer.append("<document_srl><![CDATA[").append(numResult).append("]]></document_srl>");
+            buffer.append("<content><![CDATA[").append(replyTxt).append("]]></content>");
+            buffer.append("<module><![CDATA[board]]></module>");
+            buffer.append("<act><![CDATA[procBoardInsertComment]]></act>");
+            buffer.append("</params>");
+            buffer.append("</methodCall>");
+
+            URL url= new URL(sUrl);
+            HttpURLConnection http = (HttpURLConnection) url.openConnection();
+            // 설정
+            http.setDefaultUseCaches(false);
+            http.setUseCaches(false);
+            http.setDoInput(true);
+            http.setDoOutput(true);
+            http.setRequestMethod("POST");
+            http.setRequestProperty("Accept", "application/xml, text/xml, */*;");
+            http.setRequestProperty("Accept-Encoding", "gzip, deflate");
+            http.setRequestProperty("Accept-Language", "ko-KR,ko;q=0.8,en-US;q=0.6,en;q=0.4");
+            http.setRequestProperty("Connection", "keep-alive");
+            http.setRequestProperty("Content-Length", "" + Integer.toString(buffer.toString().getBytes().length));
+            //http.setRequestProperty("Content-Type", "text/plain");
+            http.setRequestProperty("Cookie", "PHPSESSID="+phpsessid);
+            http.setRequestProperty("Host", "www.serieamania.com");
+            http.setRequestProperty("Origin", "http://www.serieamania.com");
+            http.setRequestProperty("Referer", txtReferer);
+            http.setRequestProperty("User-Agent", "Mozilla/5.0 (Windows NT 10.0; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/48.0.2564.109 Safari/537.36");
+            http.setRequestProperty("content-type", "application/xml");
+            //http.setRequestProperty("content-type", "application/x-www-form-urlencoded");
+            http.setRequestProperty("Accept-Charset", "UTF-8");
+            http.setRequestProperty("X-Requested-With", "XMLHttpRequest");
+
+
+
+
+            OutputStream outStream = http.getOutputStream();
+            outStream.write(buffer.toString().getBytes());
+            outStream.flush();
+
+            InputStreamReader tmp = new InputStreamReader(http.getInputStream());
+            BufferedReader reader = new BufferedReader(tmp);
+            StringBuilder builder = new StringBuilder();
+            String str;
+            while ((str = reader.readLine()) != null) {       // 서버에서 라인단위로 보내줄 것이므로 라인단위로 읽는다
+                builder.append(str + "\n");                     // View에 표시하기 위해 라인 구분자 추가
+            }
+            myResult = builder.toString();                       // 전송결과를 전역 변수에 저장
+            Log.d("result",myResult);
+        } catch (MalformedURLException e){
+            //
+        } catch (Exception e){
+            String kk = e.toString();
+            Log.e("result",kk);
+        }
+
+        Toast clsToast = Toast.makeText( this, "데이터를 전송하였습니다. 앱/xe 상태에 따라 리플이 등록되지 않을수 있습니다.", Toast.LENGTH_LONG );
+        clsToast.show( );
+
+        finish();
+        startActivity(getIntent());
+    }
+
 
     @Override
     public boolean onKeyDown(int keyCode, KeyEvent event) {
